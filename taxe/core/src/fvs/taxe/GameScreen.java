@@ -13,7 +13,11 @@ import gameLogic.Game;
 import gameLogic.GameState;
 import gameLogic.GameStateListener;
 import gameLogic.TurnListener;
+import gameLogic.map.CollisionStation;
 import gameLogic.map.Map;
+import gameLogic.map.Station;
+
+import java.util.Random;
 
 
 public class GameScreen extends ScreenAdapter {
@@ -27,6 +31,7 @@ public class GameScreen extends ScreenAdapter {
     public static final int ANIMATION_TIME = 2;
     private Tooltip tooltip;
     private Context context;
+    private boolean junctionFailTest = false;
 
     private StationController stationController;
     private TopBarController topBarController;
@@ -58,11 +63,14 @@ public class GameScreen extends ScreenAdapter {
         context.setRouteController(routeController);
         context.setTopBarController(topBarController);
 
+
+        //Todo add junction fail
         gameLogic.getPlayerManager().subscribeTurnChanged(new TurnListener() {
             @Override
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
+                JunctionFail();
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {
@@ -76,6 +84,28 @@ public class GameScreen extends ScreenAdapter {
         });
     }
 
+
+    private void JunctionFail() {
+        if (junctionFailTest){
+            return;
+        }
+
+        Random r = new Random();
+        if (r.nextInt(2) == 0){
+
+            junctionFailTest = true;
+            Map map = Game.getInstance().getMap();
+            Station junctionFail = map.getRandomStation();
+            while (!(junctionFail instanceof CollisionStation)) {
+                junctionFail = map.getRandomStation();
+            }
+            ((CollisionStation) junctionFail).setBroken(true);
+            context.getTopBarController().displayFlashMessage("The junction " + junctionFail.getName() + " is broken!" , Color.RED);
+
+    }
+        return;
+
+    }
 
     // called every frame
     @Override

@@ -57,8 +57,17 @@ public class RouteController {
         Station lastStation = context.getGameLogic().getMap().getStationFromPosition(lastPosition);
 
         boolean hasConnection = context.getGameLogic().getMap().doesConnectionExist(station.getName(), lastStation.getName());
+        boolean isBroken;
 
-        if(!hasConnection) {
+        if (station instanceof CollisionStation){
+            isBroken = ((CollisionStation) station).isBroken();
+        }
+        else{
+            isBroken = false;
+        }
+
+//Todo Add check for broken station or connection
+        if(!hasConnection || isBroken){
             context.getTopBarController().displayFlashMessage("This connection doesn't exist", Color.RED);
         } else {
             positions.add(station.getLocation());

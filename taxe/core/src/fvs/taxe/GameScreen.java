@@ -32,6 +32,7 @@ public class GameScreen extends ScreenAdapter {
     private Tooltip tooltip;
     private Context context;
     private boolean junctionFailTest = false;
+    private Station junctionFail;
 
     private StationController stationController;
     private TopBarController topBarController;
@@ -87,15 +88,16 @@ public class GameScreen extends ScreenAdapter {
 
     private void JunctionFail() {
         if (junctionFailTest){
+            JunctionFix();
             return;
         }
 
         Random r = new Random();
-        if (r.nextInt(2) == 0){
+        if (r.nextInt(5) == 0){
 
             junctionFailTest = true;
             Map map = Game.getInstance().getMap();
-            Station junctionFail = map.getRandomStation();
+            junctionFail = map.getRandomStation();
             while (!(junctionFail instanceof CollisionStation)) {
                 junctionFail = map.getRandomStation();
             }
@@ -106,6 +108,16 @@ public class GameScreen extends ScreenAdapter {
         return;
 
     }
+
+    private void JunctionFix() {
+        Random r = new Random();
+        if (r.nextInt(2) == 0) {
+            junctionFailTest = false;
+            ((CollisionStation) junctionFail).setBroken(false);
+            context.getTopBarController().displayFlashMessage("The junction " + junctionFail.getName() + " is fixed!" , Color.BLUE);
+
+        }
+        }
 
     // called every frame
     @Override

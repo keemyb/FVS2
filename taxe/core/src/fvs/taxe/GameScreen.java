@@ -5,8 +5,10 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import fvs.taxe.actor.CollisionStationActor;
 import fvs.taxe.controller.*;
 import fvs.taxe.dialog.DialogEndGame;
 import gameLogic.Game;
@@ -31,14 +33,16 @@ public class GameScreen extends ScreenAdapter {
     public static final int ANIMATION_TIME = 2;
     private Tooltip tooltip;
     private Context context;
-    private boolean junctionFailTest = false;
-    private Station junctionFail;
+    private Station failedJunction;
 
     private StationController stationController;
     private TopBarController topBarController;
     private ResourceController resourceController;
     private GoalController goalController;
     private RouteController routeController;
+
+    private static final float JUNCTION_BREAK_PROBABILITY = 0.2f;
+    private static final float JUNCTION_FIX_PROBABILITY = 0.5f;
 
     public GameScreen(TaxeGame game) {
         this.game = game;
@@ -71,7 +75,7 @@ public class GameScreen extends ScreenAdapter {
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
-                JunctionFail();
+                breakJunction();
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {
@@ -86,38 +90,47 @@ public class GameScreen extends ScreenAdapter {
     }
 
 
-    private void JunctionFail() {
-        if (junctionFailTest){
-            JunctionFix();
+    private void breakJunction() {
+        if (failedJunction != null){
+            fixJunction();
             return;
         }
 
         Random r = new Random();
-        if (r.nextInt(5) == 0){
+        if (r.nextFloat() > JUNCTION_BREAK_PROBABILITY) return;
 
-            junctionFailTest = true;
-            Map map = Game.getInstance().getMap();
-            junctionFail = map.getRandomStation();
-            while (!(junctionFail instanceof CollisionStation)) {
-                junctionFail = map.getRandomStation();
-            }
-            ((CollisionStation) junctionFail).setBroken(true);
-            context.getTopBarController().displayFlashMessage("The junction " + junctionFail.getName() + " is broken!" , Color.RED);
+        Map map = Game.getInstance().getMap();
+        failedJunction = map.getRandomStation();
+        while (!(failedJunction instanceof CollisionStation)) {
+            failedJunction = map.getRandomStation();
+        }
 
-    }
-        return;
+        ((CollisionStation) failedJunction).setBroken(true);
+        context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is broken!", Color.RED);
 
+        updateFailedJunctionImage();
     }
 
-    private void JunctionFix() {
+    private void fixJunction() {
         Random r = new Random();
-        if (r.nextInt(2) == 0) {
-            junctionFailTest = false;
-            ((CollisionStation) junctionFail).setBroken(false);
-            context.getTopBarController().displayFlashMessage("The junction " + junctionFail.getName() + " is fixed!" , Color.BLUE);
+        if (r.nextFloat() > JUNCTION_FIX_PROBABILITY) return;
 
+        ((CollisionStation) failedJunction).setBroken(false);
+        context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is fixed!" , Color.BLUE);
+
+        updateFailedJunctionImage();
+        failedJunction = null;
+    }
+
+    private void updateFailedJunctionImage() {
+        for (Actor actor : context.getStage().getActors()) {
+            if (actor instanceof CollisionStationActor) {
+                if (((CollisionStationActor) actor).getCollisionStation() == failedJunction) {
+                    ((CollisionStationActor) actor).updateImage();
+                }
+            }
         }
-        }
+    }
 
     // called every frame
     @Override

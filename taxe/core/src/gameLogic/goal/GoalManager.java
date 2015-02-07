@@ -13,6 +13,8 @@ import java.util.Random;
 
 public class GoalManager {
 	public final static int CONFIG_MAX_PLAYER_GOALS = 3;
+	public final static int ACCEPTABLE_ORIGIN_DEST_DISTANCE = 50;
+	public final static int ACCEPTABLE_VIA_DISTANCE = 30;
 	private ResourceManager resourceManager;
 	
 	public GoalManager(ResourceManager resourceManager) {
@@ -59,64 +61,42 @@ public class GoalManager {
 		do {
 			origin = map.getRandomStation();
 		} while (origin instanceof CollisionStation);
+
 		Station destination;
 		do {
 			destination = map.getRandomStation();
-			// always true, really?
-		} while ((destination == origin || destination instanceof CollisionStation) && (origin.getLocation().getX() - destination.getLocation().getX() > 50) && (origin.getLocation().getY() - destination.getLocation().getY() > 50));
+		} while ((destination == origin || destination instanceof CollisionStation)
+                && (origin.getEuclideanDistance(destination) < ACCEPTABLE_ORIGIN_DEST_DISTANCE));
 
 		Goal goal = new Goal(origin, destination, turn);
 
-		System.out.println("Easy goal");
 		return goal;
 	}
 
 	public Goal generateMediumGoal(int turn) {
-		Map map = Game.getInstance().getMap();
+        Goal easyGoal = generateEasyGoal(turn);
 
-		Station origin;
-		do {
-			origin = map.getRandomStation();
-		} while (origin instanceof CollisionStation);
-		Station destination;
-		do {
-			destination = map.getRandomStation();
-			// always true, really?
-		} while ((destination == origin || destination instanceof CollisionStation) && (origin.getLocation().getX() - destination.getLocation().getX() > 50) && (origin.getLocation().getY() - destination.getLocation().getY() > 50));
+        easyGoal.addConstraint(resourceManager.getRandomTrain());
 
-		Goal goal = new Goal(origin, destination, turn);
-
-        goal.addConstraint(resourceManager.getRandomTrain());
-
-		System.out.println("Medium goal");
-		return goal;
-
+		return easyGoal;
 	}
 
 	public Goal generateDifficultGoal(int turn) {
-		Map map = Game.getInstance().getMap();
-		Station via;
-		Station origin;
-		do {
-			origin = map.getRandomStation();
-		} while (origin instanceof CollisionStation);
-		Station destination;
-		do {
-			destination = map.getRandomStation();
-			// always true, really?
-		} while ((destination == origin || destination instanceof CollisionStation) || (origin.getLocation().getX() - destination.getLocation().getX() > 50) || (origin.getLocation().getY() - destination.getLocation().getY() > 50));
+        Goal mediumGoal = generateMediumGoal(turn);
 
-		do {
+        Station destination = mediumGoal.getDestination();
+        Station origin = mediumGoal.getOrigin();
+
+        Map map = Game.getInstance().getMap();
+        Station via;
+        do {
 			via = map.getRandomStation();
-		} while ((via == origin) || (via == destination));
-		Goal goal = new Goal(origin, destination, turn);
+		} while ((via == origin) || (via == destination) &&
+                (origin.getEuclideanDistance(via) < ACCEPTABLE_VIA_DISTANCE || destination.getEuclideanDistance(via) < ACCEPTABLE_VIA_DISTANCE));
 
-		goal.addConstraint(resourceManager.getRandomTrain());
-		goal.addConstraint(via);
+		mediumGoal.addConstraint(via);
 
-		System.out.println("Difficult goal");
-		return goal;
-
+		return mediumGoal;
 	}
 
 }

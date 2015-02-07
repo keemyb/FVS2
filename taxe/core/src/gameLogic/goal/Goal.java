@@ -4,7 +4,7 @@ import gameLogic.map.Station;
 import gameLogic.resource.Train;
 
 public class Goal {
-	private Station origin;
+    private Station origin;
 	private Station destination;
 	private int turnIssued;
 	private boolean complete = false;
@@ -40,6 +40,14 @@ public class Goal {
 
         return true;
 	}
+
+    public Station getDestination() {
+        return destination;
+    }
+
+    public Station getOrigin() {
+        return origin;
+    }
 	
 	public String toString() {
 		String trainString = "any train";

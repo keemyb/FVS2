@@ -1,6 +1,5 @@
 package gameLogic.goal;
 
-import Util.Tuple;
 import gameLogic.map.Station;
 import gameLogic.resource.Train;
 
@@ -10,10 +9,9 @@ public class Goal {
 	private int turnIssued;
 	private boolean complete = false;
 	//constraints
-	private Train train = null;
+	private Train requiredTrain = null;
 	private Station via = null;
-	private String goalDifficulty;
-	
+
 	public Goal(Station origin, Station destination, int turn) {
 		this.origin = origin;
 		this.destination = destination;
@@ -25,31 +23,28 @@ public class Goal {
 	}
 
     public void addConstraint(Train train) {
-        this.train = train;
+        this.requiredTrain = train;
     }
 
 	public boolean isComplete(Train train) {
-		boolean passedOrigin = false;
-		for(Tuple<String, Integer> history: train.getHistory()) {
-			if(history.getFirst().equals(origin.getName()) && history.getSecond() >= turnIssued) {
-				passedOrigin = true;
-			}
-		}
-		if(train.getFinalDestination() == destination && passedOrigin) {
-			if(this.train == null || this.train.equals(train.getName())) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
+        if (!train.historyContains(origin, turnIssued)) return false;
+        if (!train.historyContains(destination, turnIssued)) return false;
+
+        if (requiredTrain != null) {
+            if (train != requiredTrain) return false;
+        }
+
+        if (via != null) {
+            if (!train.historyContains(via, turnIssued)) return false;
+        }
+
+        return true;
 	}
 	
 	public String toString() {
 		String trainString = "any train";
-        if (train != null) {
-            trainString = "a " + train.getName();
+        if (requiredTrain != null) {
+            trainString = "a " + requiredTrain.getName();
         }
 
         String viaString = "";

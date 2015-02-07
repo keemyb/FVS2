@@ -10,8 +10,8 @@ public class Goal {
 	private int turnIssued;
 	private boolean complete = false;
 	//constraints
-	private String trainName = null;
-	private String routevia = null;
+	private Train train = null;
+	private Station via = null;
 	private String goalDifficulty;
 	
 	public Goal(Station origin, Station destination, int turn) {
@@ -20,17 +20,13 @@ public class Goal {
 		this.turnIssued = turn;
 	}
 	
-	public void addConstraint(String name, String value) {
-		if(name.equals("train")) {
-			trainName = value;
-		}
-		else if (name.equals("via")) {
-			routevia = value;
-		}
-		else {
-			throw new RuntimeException(name + " is not a valid goal constraint");
-		}
+	public void addConstraint(Station via) {
+        this.via = via;
 	}
+
+    public void addConstraint(Train train) {
+        this.train = train;
+    }
 
 	public boolean isComplete(Train train) {
 		boolean passedOrigin = false;
@@ -40,7 +36,7 @@ public class Goal {
 			}
 		}
 		if(train.getFinalDestination() == destination && passedOrigin) {
-			if(trainName == null || trainName.equals(train.getName())) {
+			if(this.train == null || this.train.equals(train.getName())) {
 				return true;
 			} else {
 				return false;
@@ -51,12 +47,17 @@ public class Goal {
 	}
 	
 	public String toString() {
-		String trainString = "train";
-		if ((trainName != null) && (routevia != null)){
-			trainString = trainName;
-			return "Send a " + trainString + " from " + origin.getName() + " to " + destination.getName() + "via" + routevia;
-		}
-		return "Send a " + trainString + " from " + origin.getName() + " to " + destination.getName();
+		String trainString = "any train";
+        if (train != null) {
+            trainString = "a " + train.getName();
+        }
+
+        String viaString = "";
+        if (via != null) {
+            viaString = " via " + via.getName();
+        }
+
+		return "Send " + trainString + " from " + origin.getName() + " to " + destination.getName() + viaString;
 
 	}
 

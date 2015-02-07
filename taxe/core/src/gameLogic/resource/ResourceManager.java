@@ -49,7 +49,7 @@ public class ResourceManager {
 		return trains;
 	}
 
-    private Resource getRandomResource() {
+    public Train getRandomTrain() {
             	
     	int index = random.nextInt(trains.size());
     	Tuple<String, Integer> train = trains.get(index);
@@ -58,7 +58,7 @@ public class ResourceManager {
     }
 
     public void addRandomResourceToPlayer(Player player) {
-        addResourceToPlayer(player, getRandomResource());
+        addResourceToPlayer(player, getRandomTrain());
     }
 
     private void addResourceToPlayer(Player player, Resource resource) {

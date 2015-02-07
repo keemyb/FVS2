@@ -21,17 +21,17 @@ public class GoalManager {
 
 	private Goal generateRandom(int turn) {
 		Random random = new Random();
-		int randomGoalDifficulty = random.nextInt(3);
+		float randomGoalDifficulty = random.nextFloat();
 
         Goal goal;
 
-		if (randomGoalDifficulty == 0) {
-			goal = generateEasyGoal(turn);
-		} else if (randomGoalDifficulty == 1) {
-			goal = generateMediumGoal(turn);
-		} else {
-			goal = generateDifficultGoal(turn);
-		}
+		if (randomGoalDifficulty >= 0.8) {
+            goal = generateDifficultGoal(turn);
+        } else if (randomGoalDifficulty >= 0.5) {
+            goal = generateMediumGoal(turn);
+        } else {
+            goal = generateEasyGoal(turn);
+        }
 
 		return goal;
 	}
@@ -67,12 +67,6 @@ public class GoalManager {
 
 		Goal goal = new Goal(origin, destination, turn);
 
-		// Goal with a specific train
-		/*Random random = new Random();
-		if (random.nextInt(2) == 1) {
-			goal.addConstraint("train", resourceManager.getTrainNames().get(random.nextInt(resourceManager.getTrainNames().size())));
-		} */
-
 		System.out.println("Easy goal");
 		return goal;
 	}
@@ -92,11 +86,7 @@ public class GoalManager {
 
 		Goal goal = new Goal(origin, destination, turn);
 
-		// Goal with a specific train
-		Random random = new Random();
-
-		goal.addConstraint("train", resourceManager.getTrainNames().get(random.nextInt(resourceManager.getTrainNames().size())));
-
+        goal.addConstraint(resourceManager.getRandomTrain());
 
 		System.out.println("Medium goal");
 		return goal;
@@ -121,11 +111,8 @@ public class GoalManager {
 		} while ((via == origin) || (via == destination));
 		Goal goal = new Goal(origin, destination, turn);
 
-		// Goal with a specific train
-		Random random = new Random();
-
-		goal.addConstraint("train", resourceManager.getTrainNames().get(random.nextInt(resourceManager.getTrainNames().size())));
-		goal.addConstraint("via", via.getName());
+		goal.addConstraint(resourceManager.getRandomTrain());
+		goal.addConstraint(via);
 
 		System.out.println("Difficult goal");
 		return goal;

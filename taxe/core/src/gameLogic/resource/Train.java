@@ -98,6 +98,15 @@ public class Train extends Resource {
         return history;
     }
 
+    public boolean historyContains(Station station, int afterTurn) {
+        for(Tuple<String, Integer> entry: history) {
+            if(entry.getFirst().equals(station.getName()) && entry.getSecond() >= afterTurn) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Station name and turn number
     public void addHistory(String stationName, int turn) {
         history.add(new Tuple<String, Integer>(stationName, turn));

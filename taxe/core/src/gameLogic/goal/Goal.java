@@ -11,6 +11,8 @@ public class Goal {
 	private boolean complete = false;
 	//constraints
 	private String trainName = null;
+	private String routevia = null;
+	private String goalDifficulty;
 	
 	public Goal(Station origin, Station destination, int turn) {
 		this.origin = origin;
@@ -21,7 +23,11 @@ public class Goal {
 	public void addConstraint(String name, String value) {
 		if(name.equals("train")) {
 			trainName = value;
-		} else {
+		}
+		else if (name.equals("via")) {
+			routevia = value;
+		}
+		else {
 			throw new RuntimeException(name + " is not a valid goal constraint");
 		}
 	}
@@ -46,10 +52,12 @@ public class Goal {
 	
 	public String toString() {
 		String trainString = "train";
-		if(trainName != null) {
+		if ((trainName != null) && (routevia != null)){
 			trainString = trainName;
+			return "Send a " + trainString + " from " + origin.getName() + " to " + destination.getName() + "via" + routevia;
 		}
 		return "Send a " + trainString + " from " + origin.getName() + " to " + destination.getName();
+
 	}
 
 	public void setComplete() {

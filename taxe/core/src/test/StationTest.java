@@ -5,6 +5,7 @@ import gameLogic.map.Position;
 import gameLogic.map.Station;
 import org.junit.Test;
 
+
 import static org.junit.Assert.assertTrue;
 
 public class StationTest {

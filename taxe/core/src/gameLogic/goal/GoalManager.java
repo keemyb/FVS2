@@ -21,41 +21,18 @@ public class GoalManager {
 
 	private Goal generateRandom(int turn) {
 		Random random = new Random();
-		int randomGoalDifficulty = random.nextInt(4 - 1) + 1;
+		int randomGoalDifficulty = random.nextInt(3);
 
-		if (randomGoalDifficulty == 1) {
-			Goal goal = generateEasyGoal(turn);
-			return goal;
-		}
-		else if (randomGoalDifficulty == 2) {
-			Goal goal = generateMediumGoal(turn);
+        Goal goal;
 
-		}
-
-		else if (randomGoalDifficulty == 3){
-			Goal goal = generateDifficultGoal(turn);
+		if (randomGoalDifficulty == 0) {
+			goal = generateEasyGoal(turn);
+		} else if (randomGoalDifficulty == 1) {
+			goal = generateMediumGoal(turn);
+		} else {
+			goal = generateDifficultGoal(turn);
 		}
 
-
-			Map map = Game.getInstance().getMap();
-
-
-			Station origin;
-			do {
-				origin = map.getRandomStation();
-			} while (origin instanceof CollisionStation);
-			Station destination;
-			do {
-				destination = map.getRandomStation();
-				// always true, really?
-			} while ((destination == origin || destination instanceof CollisionStation));
-
-			Goal goal = new Goal(origin, destination, turn);
-
-			// Goal with a specific train
-			if (random.nextInt(2) == 1) {
-				goal.addConstraint("train", resourceManager.getTrainNames().get(random.nextInt(resourceManager.getTrainNames().size())));
-			}
 		return goal;
 	}
 	

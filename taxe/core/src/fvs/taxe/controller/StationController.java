@@ -87,8 +87,8 @@ public class StationController {
         context.getStage().addActor(stationActor);
     }
 
-    private void renderCollisionStation(final Station collisionStation) {
-    	final CollisionStationActor collisionStationActor = new CollisionStationActor(collisionStation.getLocation());
+    private void renderCollisionStation(final CollisionStation collisionStation) {
+    	final CollisionStationActor collisionStationActor = CollisionStationActor.createCollisionStationActor(collisionStation);
 
     	collisionStationActor.addListener(new ClickListener() {
             @Override
@@ -116,7 +116,7 @@ public class StationController {
 
         for (Station station : stations) {
         	if(station instanceof CollisionStation) {
-        		renderCollisionStation(station);
+        		renderCollisionStation((CollisionStation) station);
         	} else {
         		renderStation(station);
         	}

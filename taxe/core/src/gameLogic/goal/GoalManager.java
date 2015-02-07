@@ -13,8 +13,12 @@ import java.util.Random;
 
 public class GoalManager {
 	public final static int CONFIG_MAX_PLAYER_GOALS = 3;
-	public final static int ACCEPTABLE_ORIGIN_DEST_DISTANCE = 50;
-	public final static int ACCEPTABLE_VIA_DISTANCE = 30;
+    // The max distance between the origin and destination.
+    public final static int MAX_ORIGIN_DEST_DISTANCE = 300;
+    // The max distance between the via and the origin, and the via and destination.
+    public final static int MAX_VIA_DISTANCE = MAX_ORIGIN_DEST_DISTANCE * 2 / 3;
+    // How much the search radius will increase on failure
+	public final static int SEARCH_RADIUS_INCREASE_STEP = MAX_ORIGIN_DEST_DISTANCE / 10;
 	private ResourceManager resourceManager;
 	
 	public GoalManager(ResourceManager resourceManager) {
@@ -63,10 +67,12 @@ public class GoalManager {
 		} while (origin instanceof CollisionStation);
 
 		Station destination;
+        int searchDistance = MAX_ORIGIN_DEST_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
 		do {
 			destination = map.getRandomStation();
+            searchDistance += SEARCH_RADIUS_INCREASE_STEP;
 		} while ((destination == origin || destination instanceof CollisionStation)
-                && (origin.getEuclideanDistance(destination) < ACCEPTABLE_ORIGIN_DEST_DISTANCE));
+                || (origin.getEuclideanDistance(destination) > searchDistance));
 
 		Goal goal = new Goal(origin, destination, turn);
 
@@ -89,10 +95,12 @@ public class GoalManager {
 
         Map map = Game.getInstance().getMap();
         Station via;
+        int searchDistance = MAX_VIA_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
         do {
 			via = map.getRandomStation();
-		} while ((via == origin) || (via == destination) &&
-                (origin.getEuclideanDistance(via) < ACCEPTABLE_VIA_DISTANCE || destination.getEuclideanDistance(via) < ACCEPTABLE_VIA_DISTANCE));
+            searchDistance += SEARCH_RADIUS_INCREASE_STEP;
+        } while ((via == origin) || (via == destination)
+                || (origin.getEuclideanDistance(via) > searchDistance || destination.getEuclideanDistance(via) > searchDistance));
 
 		mediumGoal.addConstraint(via);
 

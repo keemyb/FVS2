@@ -37,7 +37,7 @@ public class Station{
         int xDelta = x1 - x2;
         int yDelta = y1 - y2;
 
-        return (int) Math.sqrt(xDelta + yDelta);
+        return (int) Math.sqrt(xDelta * xDelta + yDelta * yDelta);
     }
 	
 	public void setActor(StationActor actor){

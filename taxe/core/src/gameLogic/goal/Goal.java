@@ -1,5 +1,6 @@
 package gameLogic.goal;
 
+import Util.Vowel;
 import gameLogic.map.Station;
 import gameLogic.resource.Train;
 
@@ -52,7 +53,14 @@ public class Goal {
 	public String toString() {
 		String trainString = "any train";
         if (requiredTrain != null) {
-            trainString = "a " + requiredTrain.getName();
+            String trainName = requiredTrain.getName();
+            String article;
+            if (Vowel.startsWithVowel(trainName)) {
+                article = "an ";
+            } else {
+                article = "a ";
+            }
+            trainString = article + requiredTrain.getName();
         }
 
         String viaString = "";

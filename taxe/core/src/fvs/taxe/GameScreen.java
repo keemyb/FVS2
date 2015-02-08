@@ -76,12 +76,10 @@ public class GameScreen extends ScreenAdapter {
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
-                if (LAST_BREAK_OR_FIX >= BREAK_OR_FIX_EVERY_X){
+                if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X){
                     breakJunction();
                 }
-                else{
                     LAST_BREAK_OR_FIX ++;
-                }
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {

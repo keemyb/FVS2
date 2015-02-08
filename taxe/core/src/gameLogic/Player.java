@@ -36,13 +36,13 @@ public class Player {
     }
 
     public void addGoal(Goal goal) {
-    	int uncompleteGoals = 0;
+    	int incompleteGoals = 0;
     	for(Goal existingGoal : goals) {
     		if(!existingGoal.getComplete()) {
-    			uncompleteGoals++;
+    			incompleteGoals++;
     		}
     	}
-        if (uncompleteGoals >= GoalManager.CONFIG_MAX_PLAYER_GOALS) {
+        if (incompleteGoals >= GoalManager.CONFIG_MAX_PLAYER_GOALS) {
             //throw new RuntimeException("Max player goals exceeded");
         	return;
         }

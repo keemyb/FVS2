@@ -41,8 +41,10 @@ public class GameScreen extends ScreenAdapter {
     private GoalController goalController;
     private RouteController routeController;
 
-    private static final float JUNCTION_BREAK_PROBABILITY = 0.2f;
+    private static final float JUNCTION_BREAK_PROBABILITY = 0.4f;
     private static final float JUNCTION_FIX_PROBABILITY = 0.5f;
+    private int LAST_BREAK_OR_FIX  = 30;
+    private static final int BREAK_OR_FIX_EVERY_X = 2;
 
     public GameScreen(TaxeGame game) {
         this.game = game;
@@ -69,13 +71,15 @@ public class GameScreen extends ScreenAdapter {
         context.setTopBarController(topBarController);
 
 
-        //Todo add junction fail
         gameLogic.getPlayerManager().subscribeTurnChanged(new TurnListener() {
             @Override
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
-                breakJunction();
+                if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X){
+                    breakJunction();
+                }
+                    LAST_BREAK_OR_FIX ++;
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {
@@ -105,6 +109,7 @@ public class GameScreen extends ScreenAdapter {
             failedJunction = map.getRandomStation();
         }
 
+        LAST_BREAK_OR_FIX = 0;
         ((CollisionStation) failedJunction).setBroken(true);
         context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is broken!", Color.RED);
 
@@ -115,6 +120,7 @@ public class GameScreen extends ScreenAdapter {
         Random r = new Random();
         if (r.nextFloat() > JUNCTION_FIX_PROBABILITY) return;
 
+        LAST_BREAK_OR_FIX = 0;
         ((CollisionStation) failedJunction).setBroken(false);
         context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is fixed!" , Color.BLUE);
 

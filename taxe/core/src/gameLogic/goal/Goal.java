@@ -21,21 +21,26 @@ public class Goal {
 	//constraints
 	private Train requiredTrain = null;
 	private Station via = null;
-
+ 
+    private int score;
+    private static final float CONSTRAINT_SCORE_MODIFIER = 1.5F;
 
 
 	public Goal(Station origin, Station destination, int turn) {
 		this.origin = origin;
 		this.destination = destination;
 		this.turnIssued = turn;
+        this.score = origin.getEuclideanDistance(destination);
 	}
 	
 	public void addConstraint(Station via) {
         this.via = via;
+        score *= CONSTRAINT_SCORE_MODIFIER;
 	}
 
     public void addConstraint(Train train) {
         this.requiredTrain = train;
+        score *= CONSTRAINT_SCORE_MODIFIER;
     }
 
 	public boolean isComplete(Train train) {
@@ -43,7 +48,7 @@ public class Goal {
         if (!train.historyContains(destination, turnIssued)) return false;
 
         if (requiredTrain != null) {
-            if (train != requiredTrain) return false;
+            if (!train.equals(requiredTrain)) return false;
         }
 
         if (via != null) {
@@ -52,6 +57,10 @@ public class Goal {
 
         return true;
 	}
+
+    public int getScore() {
+        return score;
+    }
 
     public Station getDestination() {
         return destination;

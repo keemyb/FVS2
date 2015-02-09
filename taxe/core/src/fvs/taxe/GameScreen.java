@@ -44,7 +44,7 @@ public class GameScreen extends ScreenAdapter {
     private static final float JUNCTION_BREAK_PROBABILITY = 0.4f;
     private static final float JUNCTION_FIX_PROBABILITY = 0.5f;
     private int LAST_BREAK_OR_FIX  = 30;
-    private static final int BREAK_OR_FIX_EVERY_X = 2;
+    private static final int BREAK_OR_FIX_EVERY_X_TURNS = 2;
 
     public GameScreen(TaxeGame game) {
         this.game = game;
@@ -76,7 +76,7 @@ public class GameScreen extends ScreenAdapter {
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
-                if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X){
+                if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X_TURNS){
                     breakJunction();
                 }
                     LAST_BREAK_OR_FIX ++;

@@ -31,7 +31,7 @@ public class GoalManager {
 
         Goal goal;
 
-		if (randomGoalDifficulty >= 0.8) {
+		if (randomGoalDifficulty >= 0.0) {
             goal = generateDifficultGoal(turn);
         } else if (randomGoalDifficulty >= 0.5) {
             goal = generateMediumGoal(turn);

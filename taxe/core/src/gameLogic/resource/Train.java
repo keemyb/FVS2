@@ -14,6 +14,7 @@ public class Train extends Resource {
     private IPositionable position;
     private TrainActor actor;
     private int speed;
+    private String name;
     // Final destination should be set to null after firing the arrival event
     private Station finalDestination;
 
@@ -117,5 +118,30 @@ public class Train extends Resource {
         if (actor != null) {
             actor.remove();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Train train = (Train) o;
+
+        if (speed != train.speed) return false;
+        if (name != null ? !name.equals(train.name) : train.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = speed;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

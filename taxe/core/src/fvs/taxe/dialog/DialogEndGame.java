@@ -27,7 +27,7 @@ public class DialogEndGame extends Dialog{
 				}
 			}
 			
-			text("Player " + player.getPlayerNumber() + " completed " + goalsComplete + " goals");
+			text("Player " + player.getPlayerNumber() + " scored " + player.getScore() + " points.");
 			getContentTable().row();
 			
 			if(goalsComplete > highscore) {

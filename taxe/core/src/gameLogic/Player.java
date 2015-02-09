@@ -12,12 +12,14 @@ public class Player {
     private List<Resource> resources;
     private List<Goal> goals;
     private int number;
+    private int score;
 
     public Player(PlayerManager pm, int playerNumber) {
         goals = new ArrayList<Goal>();
         resources = new ArrayList<Resource>();
         this.pm = pm;
         number = playerNumber;
+        score = 0;
     }
 
     public List<Resource> getResources() {
@@ -53,7 +55,13 @@ public class Player {
     
     public void completeGoal(Goal goal) {
     	goal.setComplete();
+        score += goal.getScore();
+        System.out.println("player score = " + score);
         changed();
+    }
+
+    public int getScore() {
+        return score;
     }
 
     /**

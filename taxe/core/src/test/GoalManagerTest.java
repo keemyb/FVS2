@@ -1,6 +1,7 @@
 package test;
 
 
+import gameLogic.Game;
 import gameLogic.Player;
 import gameLogic.PlayerManager;
 import gameLogic.goal.Goal;
@@ -14,6 +15,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class GoalManagerTest extends LibGdxTest {
@@ -26,6 +29,30 @@ public class GoalManagerTest extends LibGdxTest {
         gm = new GoalManager(rs);
         pm = new PlayerManager();
 
+    }
+
+    @Test
+    public void testGenerateEasyGoal() throws Exception {
+        Goal testGoal = gm.generateEasyGoal(4);
+
+        assertEquals (null, testGoal.getVia());
+        assertEquals (null, testGoal.getRequiredTrain());
+    }
+
+    @Test
+    public void testGenerateMediumGoal() throws Exception {
+        Goal testGoal = gm.generateMediumGoal(4);
+
+        assertNotEquals (null, testGoal.getRequiredTrain());
+        assertEquals (null, testGoal.getVia());
+    }
+
+    @Test
+    public void testGenerateDifficultGoal() throws Exception {
+        Goal testGoal = gm.generateDifficultGoal(4);
+
+        assertNotEquals (null, testGoal.getRequiredTrain());
+        assertNotEquals (null, testGoal.getVia());
     }
 
     @Test

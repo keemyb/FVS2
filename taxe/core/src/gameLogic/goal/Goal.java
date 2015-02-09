@@ -8,9 +8,20 @@ public class Goal {
 	private Station destination;
 	private int turnIssued;
 	private boolean complete = false;
+
+	public Station getVia() {
+		return via;
+	}
+
+	public Train getRequiredTrain() {
+		return requiredTrain;
+	}
+
 	//constraints
 	private Train requiredTrain = null;
 	private Station via = null;
+
+
 
 	public Goal(Station origin, Station destination, int turn) {
 		this.origin = origin;

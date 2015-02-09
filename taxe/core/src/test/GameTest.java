@@ -18,6 +18,7 @@ public class GameTest extends LibGdxTest {
         pm = game.getPlayerManager();
     }
 
+
     @Test
     public void testInitialisePlayers() {
         Player currentPlayer = pm.getCurrentPlayer();

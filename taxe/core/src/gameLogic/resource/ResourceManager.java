@@ -1,67 +1,63 @@
 package gameLogic.resource;
 
-import Util.Tuple;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import gameLogic.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class ResourceManager {
-    public final int CONFIG_MAX_RESOURCES = 7;
-    private Random random = new Random();
-    private ArrayList<Tuple<String, Integer>> trains;
-    
-    public ResourceManager() {
-    	initialise();
-    }
-    
-    private void initialise() {
-    	JsonReader jsonReader = new JsonReader();
-    	JsonValue jsonVal = jsonReader.parse(Gdx.files.local("trains.json"));
-    	
-    	trains = new ArrayList<Tuple<String, Integer>>();
-    	for(JsonValue train = jsonVal.getChild("trains"); train != null; train = train.next()) {
-    		String name = "";
-    		int speed = 50;
-    		for(JsonValue val  = train.child; val != null; val = val.next()) {
-    			if(val.name.equalsIgnoreCase("name")) {
-    				name = val.asString();
-    			} else {
-    				speed = val.asInt();
-    			}
-    		}
-    		trains.add(new Tuple<String, Integer>(name, speed));
-    	}
-    }
-    
-    public ArrayList<String> getTrainNames() {
-		ArrayList<String> names = new ArrayList<String>();
-		for(Tuple<String,Integer> train : trains) {
-			names.add(train.getFirst());
+    private static Random random = new Random();
+
+	public static final int CONFIG_MAX_RESOURCES = 7;
+	private static final String DEFAULT_TRAIN_NAME = "NO NAME";
+	private static final int DEFAULT_TRAIN_SPEED = 50;
+
+	private static List<Train> trains = new ArrayList<Train>();
+
+	static {
+		JsonReader jsonReader = new JsonReader();
+		JsonValue jsonVal = jsonReader.parse(Gdx.files.local("trains.json"));
+
+		for(JsonValue train = jsonVal.getChild("trains"); train != null; train = train.next()) {
+			String name = DEFAULT_TRAIN_NAME;
+			int speed = DEFAULT_TRAIN_SPEED;
+			for(JsonValue val  = train.child; val != null; val = val.next()) {
+				if(val.name.equalsIgnoreCase("name")) {
+					name = val.asString();
+				} else {
+					speed = val.asInt();
+				}
+			}
+			String leftImage = getLeftTrainImage(name);
+			String rightImage = getRightTrainImage(name);
+			Train newTrain = new Train(name, leftImage, rightImage, speed);
+			trains.add(newTrain);
 		}
-		return names;
-	}
-	
-	public ArrayList<Tuple<String, Integer>> getTrains() {
-		return trains;
 	}
 
-    public Train getRandomTrain() {
-            	
+	public static String getLeftTrainImage(String trainName) {
+		return trainName.replaceAll(" ", "") + ".png";
+	}
+
+	public static String getRightTrainImage(String trainName) {
+		return trainName.replaceAll(" ", "") + "Right.png";
+	}
+
+    public static Train getRandomTrain() {
     	int index = random.nextInt(trains.size());
-    	Tuple<String, Integer> train = trains.get(index);
-    	return new Train(train.getFirst(), train.getFirst().replaceAll(" ", "") + ".png", train.getFirst().replaceAll(" ", "") + "Right.png",train.getSecond());
-    	
+		Train newTrain = new Train(trains.get(index));
+		return newTrain;
     }
 
-    public void addRandomResourceToPlayer(Player player) {
+    public static void addRandomResourceToPlayer(Player player) {
         addResourceToPlayer(player, getRandomTrain());
     }
 
-    private void addResourceToPlayer(Player player, Resource resource) {
+    private static void addResourceToPlayer(Player player, Resource resource) {
         if (player.getResources().size() >= CONFIG_MAX_RESOURCES) {
 			return;
         }

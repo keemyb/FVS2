@@ -132,12 +132,12 @@ public class StationController {
         for (Connection connection : connections) {
             IPositionable start = connection.getStation1().getLocation();
             IPositionable end = connection.getStation2().getLocation();
-            game.shapeRenderer.rectLine(start.getX(), start.getY(), end.getX(), end.getY(), CONNECTION_LINE_WIDTH);
             if (connection.isBroken()) {
             	game.shapeRenderer.setColor(Color.RED);
             }	else {
             	game.shapeRenderer.setColor(Color.GRAY);
             }
+            game.shapeRenderer.rectLine(start.getX(), start.getY(), end.getX(), end.getY(), CONNECTION_LINE_WIDTH);
             
         }
         game.shapeRenderer.end();

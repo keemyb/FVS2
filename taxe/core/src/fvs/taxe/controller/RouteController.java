@@ -13,6 +13,7 @@ import gameLogic.map.CollisionStation;
 import gameLogic.map.IPositionable;
 import gameLogic.map.Station;
 import gameLogic.resource.Train;
+import gameLogic.map.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class RouteController {
         IPositionable lastPosition =  positions.get(positions.size() - 1);
         Station lastStation = context.getGameLogic().getMap().getStationFromPosition(lastPosition);
 
-        boolean hasConnection = context.getGameLogic().getMap().doesConnectionExist(station.getName(), lastStation.getName());
+        boolean hasConnection = (context.getGameLogic().getMap().doesConnectionExist(station.getName(), lastStation.getName()));
         boolean isBroken;
 
         if (station instanceof CollisionStation){
@@ -67,12 +68,18 @@ public class RouteController {
         }
 
 //Todo Add check for broken station or connection
+        
+        //if (connection.isBroken()) {
+        //	context.getTopBarController().displayFlashMessage("This connection doesn't exist" , Color.RED);
+        //}
+        
         if(!hasConnection || isBroken){
             context.getTopBarController().displayFlashMessage("This connection doesn't exist", Color.RED);
         } else {
             positions.add(station.getLocation());
             canEndRouting = !(station instanceof CollisionStation);
         }
+        
     }
 
     private void addRoutingButtons() {

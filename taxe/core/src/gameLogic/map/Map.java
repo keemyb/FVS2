@@ -79,7 +79,11 @@ public class Map {
 
             if (s1.equals(stationName) && s2.equals(anotherStationName)
                 || s1.equals(anotherStationName) && s2.equals(stationName)) {
-                return true;
+                if (connection.isBroken()) {
+                	return false;
+                } else {
+                	return true;
+                }
             }
         }
 
@@ -88,6 +92,10 @@ public class Map {
 
     public Station getRandomStation() {
         return stations.get(random.nextInt(stations.size()));
+    }
+    
+    public Connection getRandomConnection() {
+    	return connections.get(random.nextInt(connections.size()));
     }
 
     public Station addStation(String name, Position location) {

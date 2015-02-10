@@ -51,7 +51,8 @@ public class GameScreen extends ScreenAdapter {
     private int LAST_CONNECTION_BREAK_OR_FIX = 30;
     private static final int CONNECTION_BREAK_OR_FIX_EVERY_TURN = 2;
     private int BROKEN_CONNECTIONS = 0;
-    private int MAX_BROKEN_CONNECTIONS = 2;
+    private int MAX_BROKEN_CONNECTIONS = 1;
+    private Connection LAST_BROKEN_CONNECTION;
     
     public GameScreen(TaxeGame game) {
         this.game = game;
@@ -88,14 +89,17 @@ public class GameScreen extends ScreenAdapter {
                 }
                     LAST_BREAK_OR_FIX ++;
                     
-                if (LAST_CONNECTION_BREAK_OR_FIX > CONNECTION_BREAK_OR_FIX_EVERY_TURN){
+                if (LAST_CONNECTION_BREAK_OR_FIX > CONNECTION_BREAK_OR_FIX_EVERY_TURN) {
+                	if (BROKEN_CONNECTIONS == MAX_BROKEN_CONNECTIONS) {
+                		fixConnection(LAST_BROKEN_CONNECTION);
+                		return;
+                	}
+                	
                 	Map map = Game.getInstance().getMap();
                     breakConnection(map.getRandomConnection());
                 }
-                    LAST_CONNECTION_BREAK_OR_FIX ++;
                 
-                Map map = Game.getInstance().getMap();
-                fixConnection(map.getRandomConnection());
+                LAST_CONNECTION_BREAK_OR_FIX ++;
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {
@@ -149,30 +153,23 @@ public class GameScreen extends ScreenAdapter {
     		fixConnection(connection);
     		return;	
     	}
-    	while (BROKEN_CONNECTIONS >= MAX_BROKEN_CONNECTIONS) {
-    		Map map = Game.getInstance().getMap();
-    		fixConnection(map.getRandomConnection());
-    		return;
-    	}
     	
     	Random p = new Random();
     	if (p.nextFloat() > CONNECTION_BREAK_PROBABILITY) return;
     	
     	connection.setBroken(true);
+    	LAST_BROKEN_CONNECTION = connection;
     	LAST_CONNECTION_BREAK_OR_FIX = 0;
     	BROKEN_CONNECTIONS += 1;
     	context.getTopBarController().displayFlashMessage("The track between " + connection.getStation1().getName() + " and " + connection.getStation2().getName() + " is broken!" , Color.RED);
     }
     
     private void fixConnection(Connection connection) {
-    	if ((connection.isBroken())) {
-    		connection.setBroken(false);
-    		LAST_CONNECTION_BREAK_OR_FIX = 0;
-    		BROKEN_CONNECTIONS -= 1;
-    		context.getTopBarController().displayFlashMessage("The track between " + connection.getStation1().getName() + " and " + connection.getStation2().getName() + " has been fixed!" , Color.BLUE);
-    	
+    	connection.setBroken(false);
+    	LAST_CONNECTION_BREAK_OR_FIX = 0;
+    	BROKEN_CONNECTIONS -= 1;
+    	context.getTopBarController().displayFlashMessage("The track between " + connection.getStation1().getName() + " and " + connection.getStation2().getName() + " has been fixed!" , Color.BLUE);
     	}
-    }
     
     private void updateFailedJunctionImage() {
         for (Actor actor : context.getStage().getActors()) {

@@ -21,15 +21,15 @@ public class GoalController {
 	private Context context;
 	private Group goalButtons = new Group();
 
-	private Tooltip originTip;
-	private Tooltip destTip;
-	private Tooltip viaTip;
+	//private Tooltip originTip;
+	//private Tooltip destTip;
+	//private Tooltip viaTip;
 
 	public GoalController(Context context) {
 		this.context = context;
-		originTip = new Tooltip(context.getSkin());
-		destTip = new Tooltip(context.getSkin());
-		viaTip = new Tooltip(context.getSkin());
+		//originTip = new Tooltip(context.getSkin());
+		//destTip = new Tooltip(context.getSkin());
+		//viaTip = new Tooltip(context.getSkin());
 	}
 
 	private List<Goal> playerGoals() {
@@ -79,21 +79,20 @@ public class GoalController {
 					context.getSkin());
 			button.setPosition(x, y);
 
-			final Station goalOrigin = goal.getOrigin();
-			final Station goalDest = goal.getDestination();
-			final Station goalVia = goal.getVia();
+			final Station origin = goal.getOrigin();
+			final Station dest = goal.getDestination();
+			final Station via = goal.getVia();
 
 			button.addListener(new ClickListener() {
-
-				Station origin = goalOrigin;
-				Station dest = goalDest;
-				Station via = goalVia;
 
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
-
-					originTip.setPosition(origin.getLocation().getX(), origin
+					origin.getActor().setHighlightedImage();
+					dest.getActor().setHighlightedImage();
+					if(via != null) 
+						via.getActor().setHighlightedImage();
+					/*originTip.setPosition(origin.getLocation().getX(), origin
 							.getLocation().getY());
 					originTip.show(origin.getName());
 					
@@ -105,16 +104,20 @@ public class GoalController {
 						viaTip.setPosition(via.getLocation().getX(), via
 								.getLocation().getY());
 						viaTip.show(via.getName());
-					}
+					}*/
 					
 				}
 
 				@Override
 				public void exit(InputEvent event, float x, float y,
 						int pointer, Actor toActor) {
-					originTip.hide();
-					destTip.hide();
-					viaTip.hide();
+					origin.getActor().setNormalImage();
+					dest.getActor().setNormalImage();
+					if(via != null) 
+						via.getActor().setNormalImage();
+					//originTip.hide();
+					//destTip.hide();
+					//viaTip.hide();
 				}
 			});
 			goalButtons.addActor(button);

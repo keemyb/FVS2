@@ -69,10 +69,6 @@ public class Goal {
     public Station getOrigin() {
         return origin;
     }
-    
-    public Station getVia() {
-    	return via;
-    }
 	
 	public String toString() {
 		String trainString = "any train";

@@ -13,8 +13,10 @@ public class StationActor extends Image {
     private static int height = 20;
 
     private static String normalImage = "station_dot.png";
+    private static String startImage = "station_dot_start.png";
+    private static String finishImage = "station_dot_finish.png";
     private static String highlightedImage = "station_dot_highlight.png";
-    
+
     public StationActor(IPositionable location) {
         super(new Texture(Gdx.files.internal(normalImage)));
 
@@ -28,5 +30,13 @@ public class StationActor extends Image {
     
     public void setHighlightedImage() {
     	super.setDrawable(new SpriteDrawable(new Sprite(new Texture(highlightedImage))));
+    }
+
+    public void setStartImage() {
+        super.setDrawable(new SpriteDrawable(new Sprite(new Texture(startImage))));
+    }
+
+    public void setFinishImage() {
+        super.setDrawable(new SpriteDrawable(new Sprite(new Texture(finishImage))));
     }
 }

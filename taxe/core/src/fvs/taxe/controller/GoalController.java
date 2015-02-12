@@ -1,7 +1,12 @@
 package fvs.taxe.controller;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import fvs.taxe.TaxeGame;
-import fvs.taxe.Tooltip;
 import gameLogic.Player;
 import gameLogic.PlayerManager;
 import gameLogic.goal.Goal;
@@ -9,13 +14,6 @@ import gameLogic.map.Station;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class GoalController {
 	private Context context;
@@ -88,8 +86,8 @@ public class GoalController {
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
-					origin.getActor().setHighlightedImage();
-					dest.getActor().setHighlightedImage();
+					origin.getActor().setStartImage();
+					dest.getActor().setFinishImage();
 					if(via != null) 
 						via.getActor().setHighlightedImage();
 					/*originTip.setPosition(origin.getLocation().getX(), origin

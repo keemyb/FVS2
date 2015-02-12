@@ -229,9 +229,9 @@ public class GameScreen extends ScreenAdapter {
         game.batch.begin();
         game.fontSmall.draw(game.batch, "Turn " + (gameLogic.getPlayerManager().getTurnNumber() + 1) + "/" + gameLogic.TOTAL_TURNS, (float) TaxeGame.WIDTH - 90.0f, 20.0f);
         float y = ((float) TaxeGame.HEIGHT)- 10.0f - TopBarController.CONTROLS_HEIGHT;
-        game.fontSmall.draw(game.batch, "Scores:", (float) TaxeGame.WIDTH - 180.0f, y);
-        game.fontSmall.draw(game.batch, "Player 1 - " + gameLogic.getPlayerManager().getAllPlayers().get(0).getScore(), (float) TaxeGame.WIDTH - 180.0f, y-25.0f);
-        game.fontSmall.draw(game.batch, "Player 2 - " + gameLogic.getPlayerManager().getAllPlayers().get(1).getScore(), (float) TaxeGame.WIDTH - 180.0f, y-50.0f);
+        game.fontSmall.draw(game.batch, "Scores", (float) TaxeGame.WIDTH - 140.0f, y);
+        game.fontSmall.draw(game.batch, "Player 1: " + gameLogic.getPlayerManager().getAllPlayers().get(0).getScore(), (float) TaxeGame.WIDTH - 140.0f, y-25.0f);
+        game.fontSmall.draw(game.batch, "Player 2: " + gameLogic.getPlayerManager().getAllPlayers().get(1).getScore(), (float) TaxeGame.WIDTH - 140.0f, y-50.0f);
         //score
         //player 1 - 9999
         //player 2 - 9999

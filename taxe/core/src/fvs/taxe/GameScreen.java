@@ -176,7 +176,11 @@ public class GameScreen extends ScreenAdapter {
         game.batch.end();
 
         resourceController.drawHeaderText();
-        goalController.showCurrentPlayerGoals();
+        goalController.showCurrentPlayerHeader();
+        if(gameLogic.getUpdateGoalsOnScreen()) {
+        	goalController.showCurrentPlayerGoals();
+        	gameLogic.setUpdateGoalsOnScreen(false);
+        }
     }
 
     @Override

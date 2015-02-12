@@ -13,7 +13,7 @@ public class StationActor extends Image {
     private static int height = 20;
 
     private static String normalImage = "station_dot.png";
-    private static String highlightedImage = "station_highlighted.png";
+    private static String highlightedImage = "station_dot_highlight.png";
     
     public StationActor(IPositionable location) {
         super(new Texture(Gdx.files.internal(normalImage)));

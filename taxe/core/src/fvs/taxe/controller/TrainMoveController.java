@@ -24,7 +24,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 public class TrainMoveController {
     private Context context;
     private Train train;
-    public static List<TrainMoveController> controllers = new ArrayList<>();
+    public static List<TrainMoveController> controllers = new ArrayList<TrainMoveController>();
 
     public TrainMoveController(Context context, Train train) {
         this.context = context;
@@ -83,7 +83,7 @@ public class TrainMoveController {
             current.setX((int) train.getActor().getX());
             current.setY((int) train.getActor().getY());
         }
-        List <Station> stationsToRemove = new ArrayList<>();
+        List <Station> stationsToRemove = new ArrayList<Station>();
         action.addAction(beforeAction());
         boolean broken = false;
 

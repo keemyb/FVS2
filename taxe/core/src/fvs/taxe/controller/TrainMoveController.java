@@ -24,12 +24,14 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
 public class TrainMoveController {
     private Context context;
     private Train train;
+    public static List<TrainMoveController> controllers = new ArrayList<>();
 
     public TrainMoveController(Context context, Train train) {
         this.context = context;
         this.train = train;
 
-        addMoveActions();
+        refreshMoveActions();
+        controllers.add(this);
     }
 
     // an action for the train to run before it starts moving across the screen
@@ -46,6 +48,7 @@ public class TrainMoveController {
     private RunnableAction perStationAction(final Station station) {
         return new RunnableAction() {
             public void run() {
+                train.getRoute().remove(0);
                 train.addHistory(station.getName(), context.getGameLogic().getPlayerManager().getTurnNumber());
                 System.out.println("Added to history: passed " + station.getName() + " on turn "
                         + context.getGameLogic().getPlayerManager().getTurnNumber());
@@ -73,10 +76,30 @@ public class TrainMoveController {
         };
     }
 
-    public void addMoveActions() {
+    public void refreshMoveActions() {
         SequenceAction action = Actions.sequence();
         IPositionable current = train.getPosition();
+        if (current.getX() == -1){
+            current.setX((int) train.getActor().getX());
+            current.setY((int) train.getActor().getY());
+        }
+        List <Station> stationsToRemove = new ArrayList<>();
         action.addAction(beforeAction());
+        boolean broken = false;
+
+
+        for (final Station station : train.getRoute()) {
+            if (station instanceof CollisionStation){
+                if (((CollisionStation) station).isBroken()) {
+                    broken = true;
+                }
+            }
+            if (broken){
+                stationsToRemove.add(station);
+            }
+            else{train.setFinalDestination(station);}
+        }
+        train.getRoute().removeAll (stationsToRemove);
 
         for (final Station station : train.getRoute()) {
             IPositionable next = station.getLocation();
@@ -86,7 +109,9 @@ public class TrainMoveController {
             current = next;
         }
 
-        action.addAction(afterAction());
+        if (!broken) {
+            action.addAction(afterAction());
+        }
 
         // remove previous actions to be cautious
         train.getActor().clearActions();

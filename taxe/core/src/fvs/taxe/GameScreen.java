@@ -101,6 +101,10 @@ public class GameScreen extends ScreenAdapter {
                 }
                 
                 LAST_CONNECTION_BREAK_OR_FIX ++;
+
+                for (TrainMoveController controller : TrainMoveController.controllers) {
+                    controller.refreshMoveActions();
+                }
             }
         });
         gameLogic.subscribeStateChanged(new GameStateListener() {
@@ -116,6 +120,13 @@ public class GameScreen extends ScreenAdapter {
 
 
     private void breakJunction() {
+        Station station = map.getStationByName("Lille");
+
+        if(station instanceof CollisionStation) {
+            ((CollisionStation) station).setBroken(true);
+            return;
+
+        }
         if (failedJunction != null){
             fixJunction();
             return;

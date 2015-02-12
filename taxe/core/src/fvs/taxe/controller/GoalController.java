@@ -1,69 +1,134 @@
 package fvs.taxe.controller;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import fvs.taxe.TaxeGame;
+import fvs.taxe.Tooltip;
 import gameLogic.Player;
 import gameLogic.PlayerManager;
 import gameLogic.goal.Goal;
+import gameLogic.map.Station;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
 public class GoalController {
-    private Context context;
-    private Group goalButtons = new Group();
+	private Context context;
+	private Group goalButtons = new Group();
 
-    public GoalController(Context context) {
-        this.context = context;
-    }
+	//private Tooltip originTip;
+	//private Tooltip destTip;
+	//private Tooltip viaTip;
 
-    private List<String> playerGoalStrings() {
-        ArrayList<String> strings = new ArrayList<String>();
-        PlayerManager pm = context.getGameLogic().getPlayerManager();
-        Player currentPlayer = pm.getCurrentPlayer();
+	public GoalController(Context context) {
+		this.context = context;
+		//originTip = new Tooltip(context.getSkin());
+		//destTip = new Tooltip(context.getSkin());
+		//viaTip = new Tooltip(context.getSkin());
+	}
 
-        for (Goal goal : currentPlayer.getGoals()) {
-            if(goal.getComplete()) {
-                continue;
-            }
+	private List<Goal> playerGoals() {
+		ArrayList<Goal> goals = new ArrayList<Goal>();
+		PlayerManager pm = context.getGameLogic().getPlayerManager();
+		Player currentPlayer = pm.getCurrentPlayer();
 
-            strings.add(goal.toString());
-        }
+		for (Goal goal : currentPlayer.getGoals()) {
+			if (goal.getComplete()) {
+				continue;
+			}
 
-        return strings;
-    }
+			goals.add(goal);
+		}
 
-    public void showCurrentPlayerGoals() {
-        TaxeGame game = context.getTaxeGame();
-        
-        goalButtons.remove();
-        goalButtons.clear();
+		return goals;
+	}
 
-        float top = (float) TaxeGame.HEIGHT;
-        float x = 10.0f;
-        float y = top - 10.0f - TopBarController.CONTROLS_HEIGHT;
+	public void showCurrentPlayerHeader() {
+		TaxeGame game = context.getTaxeGame();
 
-        game.batch.begin();
-        game.fontSmall.setColor(Color.BLACK);
-        game.fontSmall.draw(game.batch, playerGoalHeader(), x, y);
-        game.batch.end();
-        
-        y -= 15;
+		float top = (float) TaxeGame.HEIGHT;
+		float x = 10.0f;
+		float y = top - 10.0f - TopBarController.CONTROLS_HEIGHT;
 
-        for (String goalString : playerGoalStrings()) {
-            y -= 30;
-            
-            TextButton button  = new TextButton(goalString, context.getSkin());
-            button.setPosition(x,y);
-            goalButtons.addActor(button);
-        }
-        
-        context.getStage().addActor(goalButtons);
-    }
+		game.batch.begin();
+		game.fontSmall.setColor(Color.BLACK);
+		game.fontSmall.draw(game.batch, playerGoalHeader(), x, y);
+		game.batch.end();
+	}
 
-    private String playerGoalHeader() {
-        return "Player " + context.getGameLogic().getPlayerManager().getCurrentPlayer().getPlayerNumber() + " Goals:";
-    }
+	public void showCurrentPlayerGoals() {
+
+		goalButtons.remove();
+		goalButtons.clear();
+
+		float top = (float) TaxeGame.HEIGHT;
+		float x = 10.0f;
+		float y = top - 10.0f - TopBarController.CONTROLS_HEIGHT;
+
+		y -= 15;
+
+		for (Goal goal : playerGoals()) {
+			y -= 30;
+
+			TextButton button = new TextButton(goal.toString(),
+					context.getSkin());
+			button.setPosition(x, y);
+
+			final Station origin = goal.getOrigin();
+			final Station dest = goal.getDestination();
+			final Station via = goal.getVia();
+
+			button.addListener(new ClickListener() {
+
+				@Override
+				public void enter(InputEvent event, float x, float y,
+						int pointer, Actor fromActor) {
+					origin.getActor().setHighlightedImage();
+					dest.getActor().setHighlightedImage();
+					if(via != null) 
+						via.getActor().setHighlightedImage();
+					/*originTip.setPosition(origin.getLocation().getX(), origin
+							.getLocation().getY());
+					originTip.show(origin.getName());
+					
+					destTip.setPosition(dest.getLocation().getX(), dest.getLocation()
+							.getY());
+					destTip.show(dest.getName());
+					
+					if (via != null) {
+						viaTip.setPosition(via.getLocation().getX(), via
+								.getLocation().getY());
+						viaTip.show(via.getName());
+					}*/
+					
+				}
+
+				@Override
+				public void exit(InputEvent event, float x, float y,
+						int pointer, Actor toActor) {
+					origin.getActor().setNormalImage();
+					dest.getActor().setNormalImage();
+					if(via != null) 
+						via.getActor().setNormalImage();
+					//originTip.hide();
+					//destTip.hide();
+					//viaTip.hide();
+				}
+			});
+			goalButtons.addActor(button);
+		}
+
+		context.getStage().addActor(goalButtons);
+	}
+
+	private String playerGoalHeader() {
+		return "Player "
+				+ context.getGameLogic().getPlayerManager().getCurrentPlayer()
+						.getPlayerNumber() + " Goals:";
+	}
 }

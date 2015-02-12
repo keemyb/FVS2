@@ -5,7 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+
 import fvs.taxe.actor.TrainActor;
+import gameLogic.Game;
 import gameLogic.Player;
 import gameLogic.map.CollisionStation;
 import gameLogic.map.IPositionable;
@@ -66,6 +68,7 @@ public class TrainMoveController {
                 train.setPosition(train.getFinalDestination().getLocation());
                 train.getActor().setVisible(false);
                 train.setFinalDestination(null);
+                Game.getInstance().setUpdateGoalsOnScreen(true);
             }
         };
     }

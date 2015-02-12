@@ -14,6 +14,7 @@ public class Game {
 	private ResourceManager resourceManager;
 	private Map map;
 	private GameState state;
+	private boolean updateGoalsOnScreen;
 	private List<GameStateListener> gameStateListeners = new ArrayList<GameStateListener>();
 
 	private final int CONFIG_PLAYERS = 2;
@@ -35,6 +36,7 @@ public class Game {
 			public void changed() {
 				Player currentPlayer = playerManager.getCurrentPlayer();
 				goalManager.addRandomGoalToPlayer(currentPlayer);
+				updateGoalsOnScreen = true;
 				resourceManager.addRandomResourceToPlayer(currentPlayer);
 				resourceManager.addRandomResourceToPlayer(currentPlayer);
 			}
@@ -57,6 +59,7 @@ public class Game {
 	private void initialisePlayers() {
 		Player player = playerManager.getAllPlayers().get(0);
 		goalManager.addRandomGoalToPlayer(player);
+		updateGoalsOnScreen = true;
 		resourceManager.addRandomResourceToPlayer(player);
 		resourceManager.addRandomResourceToPlayer(player);
 	}
@@ -94,5 +97,13 @@ public class Game {
 		for(GameStateListener listener : gameStateListeners) {
 			listener.changed(state);
 		}
+	}
+	
+	public void setUpdateGoalsOnScreen(boolean updateGoals) {
+		updateGoalsOnScreen = updateGoals;
+	}
+	
+	public boolean getUpdateGoalsOnScreen() {
+		return updateGoalsOnScreen;
 	}
 }

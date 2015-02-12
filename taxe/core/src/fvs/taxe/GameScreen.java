@@ -88,7 +88,7 @@ public class GameScreen extends ScreenAdapter {
                 if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X_TURNS){
                     breakJunction();
                 }
-                    LAST_BREAK_OR_FIX ++;
+                LAST_BREAK_OR_FIX ++;
                     
                 if (LAST_CONNECTION_BREAK_OR_FIX > CONNECTION_BREAK_OR_FIX_EVERY_TURN) {
                 	if (BROKEN_CONNECTIONS == MAX_BROKEN_CONNECTIONS) {
@@ -120,13 +120,6 @@ public class GameScreen extends ScreenAdapter {
 
 
     private void breakJunction() {
-        Station station = map.getStationByName("Lille");
-
-        if(station instanceof CollisionStation) {
-            ((CollisionStation) station).setBroken(true);
-            return;
-
-        }
         if (failedJunction != null){
             fixJunction();
             return;
@@ -161,7 +154,7 @@ public class GameScreen extends ScreenAdapter {
     }
     
     private void breakConnection(Connection connection) {
-    	if (connection.isBroken()) {
+        if (connection.isBroken()) {
     		fixConnection(connection);
     		return;	
     	}

@@ -77,45 +77,56 @@ public class TrainMoveController {
     }
 
     public void refreshMoveActions() {
-        SequenceAction action = Actions.sequence();
+        if (train.getRoute().size() == 0) return;
+
+        SequenceAction actionSequence = Actions.sequence();
         IPositionable current = train.getPosition();
         if (current.getX() == -1){
             current.setX((int) train.getActor().getX());
             current.setY((int) train.getActor().getY());
         }
-        List <Station> stationsToRemove = new ArrayList<Station>();
-        action.addAction(beforeAction());
-        boolean broken = false;
 
+        int routeLength = 0;
+        actionSequence.addAction(beforeAction());
 
-        for (final Station station : train.getRoute()) {
+        for (int i = 0; i < train.getRoute().size(); i++) {
+            Station station = train.getRoute().get(i);
+
             if (station instanceof CollisionStation){
                 if (((CollisionStation) station).isBroken()) {
-                    broken = true;
+                    break;
                 }
             }
-            if (broken){
-                stationsToRemove.add(station);
+
+            if (i < train.getRoute().size()-1){
+                Station nextStation = train.getRoute().get(i+1);
+
+                if (!context.getGameLogic().getMap().doesConnectionExist(station.getName(), nextStation.getName())){
+                    break;
+                }
             }
-            else{train.setFinalDestination(station);}
+
+            routeLength++;
         }
-        train.getRoute().removeAll (stationsToRemove);
+
+        while (train.getRoute().size() - 1 > routeLength) {
+            train.getRoute().remove(train.getRoute().size() -1);
+        }
 
         for (final Station station : train.getRoute()) {
             IPositionable next = station.getLocation();
             float duration = getDistance(current, next) / train.getSpeed();
-            action.addAction(moveTo(next.getX() - TrainActor.width / 2, next.getY() - TrainActor.height / 2, duration));
-            action.addAction(perStationAction(station));
+            actionSequence.addAction(moveTo(next.getX() - TrainActor.width / 2, next.getY() - TrainActor.height / 2, duration));
+            actionSequence.addAction(perStationAction(station));
             current = next;
         }
+        actionSequence.addAction(afterAction());
 
-        if (!broken) {
-            action.addAction(afterAction());
-        }
+        train.setFinalDestination(train.getRoute().get(train.getRoute().size()-1));
 
         // remove previous actions to be cautious
         train.getActor().clearActions();
-        train.getActor().addAction(action);
+        train.getActor().addAction(actionSequence);
     }
 
     private float getDistance(IPositionable a, IPositionable b) {

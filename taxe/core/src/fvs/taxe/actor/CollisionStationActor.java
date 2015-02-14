@@ -24,6 +24,9 @@ public class CollisionStationActor extends Image {
         setPosition(collisionStation.getLocation().getX() - width / 2, collisionStation.getLocation().getY() - height / 2);
     }
 
+    /**
+     * Updating the image displayed so that it reflects it's un/broken state.
+     */
     public void updateImage() {
         String imageFileName;
         if (collisionStation.isBroken()) {

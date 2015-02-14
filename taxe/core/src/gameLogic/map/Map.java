@@ -11,6 +11,10 @@ import java.util.Random;
 public class Map {
     private List<Station> stations;
     private List<Connection> connections;
+
+    /* Saving random instance so we don't have keep instantiating new
+    ones every time we need a random number.
+     */
     private Random random = new Random();
 
     public Map() {
@@ -72,13 +76,20 @@ public class Map {
         }
     }
 
-    public boolean doesConnectionExist(String stationName, String anotherStationName) {
+    /**
+     * A connection is considered to exist if there is a unbroken connection (track)
+     * between two stations.
+     * @param station1 A station to check the connection between.
+     * @param station2 The other station to check the connection between.
+     * @return true if a connection exists, false otherwise.
+     */
+    public boolean doesConnectionExist(String station1, String station2) {
         for (Connection connection : connections) {
             String s1 = connection.getStation1().getName();
             String s2 = connection.getStation2().getName();
 
-            if (s1.equals(stationName) && s2.equals(anotherStationName)
-                || s1.equals(anotherStationName) && s2.equals(stationName)) {
+            if (s1.equals(station1) && s2.equals(station2)
+                || s1.equals(station2) && s2.equals(station1)) {
                 if (connection.isBroken()) {
                 	return false;
                 } else {

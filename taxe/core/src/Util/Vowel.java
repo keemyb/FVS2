@@ -12,5 +12,6 @@ public class Vowel {
         return (VOWELS.contains(firstCharacter));
     }
 
+    // Preventing instantiation of this class since it's only method is static.
     private Vowel() {}
 }

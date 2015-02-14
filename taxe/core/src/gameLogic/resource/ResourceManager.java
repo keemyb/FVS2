@@ -9,7 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The Class that holds all of the resources (which as of A3, is just Trains).
+ * As all the methods are static, there is no need to instantiate this class.
+ */
 public class ResourceManager {
+    /* Using a static random instance so we can reference it from our
+    static methods, and also so we don't have keep instantiating new
+    ones every time a random train is requested.
+     */
     private static Random random = new Random();
 
 	public static final int CONFIG_MAX_RESOURCES = 7;
@@ -23,6 +31,7 @@ public class ResourceManager {
 		JsonValue jsonVal = jsonReader.parse(Gdx.files.local("trains.json"));
 
 		for(JsonValue train = jsonVal.getChild("trains"); train != null; train = train.next()) {
+            // If no name or speed is found these defaults will be used.
 			String name = DEFAULT_TRAIN_NAME;
 			int speed = DEFAULT_TRAIN_SPEED;
 			for(JsonValue val  = train.child; val != null; val = val.next()) {
@@ -39,16 +48,27 @@ public class ResourceManager {
 		}
 	}
 
+    /**
+     * Gets the file name of a Train's left image based on it's name
+     */
 	public static String getLeftTrainImage(String trainName) {
 		return trainName.replaceAll(" ", "") + ".png";
 	}
 
+    /**
+     * Gets the file name of a Train's right image based on it's name
+     */
 	public static String getRightTrainImage(String trainName) {
 		return trainName.replaceAll(" ", "") + "Right.png";
 	}
 
+    /**
+     * Gets a random Train.
+     * @return a copy of a Train that is stored in the static Trains list
+     */
     public static Train getRandomTrain() {
     	int index = random.nextInt(trains.size());
+        // Using the Train copy constructor
 		Train newTrain = new Train(trains.get(index));
 		return newTrain;
     }

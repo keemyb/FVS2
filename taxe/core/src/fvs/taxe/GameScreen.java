@@ -25,6 +25,11 @@ import java.util.Random;
 
 
 public class GameScreen extends ScreenAdapter {
+    /* Using a random instance so we don't have keep instantiating new
+    ones every time we need a random number.
+    */
+    private static Random random = new Random();
+
     final private TaxeGame game;
     private Stage stage;
     private Texture mapTexture;
@@ -35,7 +40,12 @@ public class GameScreen extends ScreenAdapter {
     public static final int ANIMATION_TIME = 2;
     private Tooltip tooltip;
     private Context context;
+
     private Station failedJunction;
+    private Connection failedConnection;
+    private int lastJunctionBreakOrFix;
+    private int lastConnectionBreakOrFix;
+    private int brokenConnections = 0;
 
     private StationController stationController;
     private TopBarController topBarController;
@@ -43,18 +53,20 @@ public class GameScreen extends ScreenAdapter {
     private GoalController goalController;
     private RouteController routeController;
 
+    // The probability a CollisionStation will be broken/fixed.
     private static final float JUNCTION_BREAK_PROBABILITY = 0.4f;
     private static final float JUNCTION_FIX_PROBABILITY = 0.5f;
-    private int LAST_BREAK_OR_FIX  = 30;
-    private static final int BREAK_OR_FIX_EVERY_X_TURNS = 2;
+    /* A junction will only be toggled broken after this many turns.
+    This is so that players are overwhelmed in decision making
+    because things are changing so rapidly.
+     */
+    private static final int JUNCTION_BREAK_OR_FIX_EVERY_X_TURNS = 2;
 
+    // As above
     private static final float CONNECTION_BREAK_PROBABILITY = 0.7f;
-    private int LAST_CONNECTION_BREAK_OR_FIX = 30;
     private static final int CONNECTION_BREAK_OR_FIX_EVERY_TURN = 2;
-    private int BROKEN_CONNECTIONS = 0;
-    private int MAX_BROKEN_CONNECTIONS = 1;
-    private Connection LAST_BROKEN_CONNECTION;
-    
+    private static final int MAX_BROKEN_CONNECTIONS = 1;
+
     public GameScreen(TaxeGame game) {
         this.game = game;
         stage = new Stage();
@@ -79,20 +91,24 @@ public class GameScreen extends ScreenAdapter {
         context.setRouteController(routeController);
         context.setTopBarController(topBarController);
 
+        lastConnectionBreakOrFix = gameLogic.TOTAL_TURNS;
+        lastJunctionBreakOrFix = gameLogic.TOTAL_TURNS;
 
+
+        // Every time the turn is changed, break or fix a CollisionStation/connection if appropriate.
         gameLogic.getPlayerManager().subscribeTurnChanged(new TurnListener() {
             @Override
             public void changed() {
                 gameLogic.setState(GameState.ANIMATING);
                 topBarController.displayFlashMessage("Time is passing...", Color.BLACK);
-                if (LAST_BREAK_OR_FIX > BREAK_OR_FIX_EVERY_X_TURNS){
+                if (lastJunctionBreakOrFix > JUNCTION_BREAK_OR_FIX_EVERY_X_TURNS){
                     breakJunction();
                 }
-                LAST_BREAK_OR_FIX ++;
+                lastJunctionBreakOrFix++;
                     
-                if (LAST_CONNECTION_BREAK_OR_FIX > CONNECTION_BREAK_OR_FIX_EVERY_TURN) {
-                	if (BROKEN_CONNECTIONS == MAX_BROKEN_CONNECTIONS) {
-                		fixConnection(LAST_BROKEN_CONNECTION);
+                if (lastConnectionBreakOrFix > CONNECTION_BREAK_OR_FIX_EVERY_TURN) {
+                	if (brokenConnections == MAX_BROKEN_CONNECTIONS) {
+                		fixConnection(failedConnection);
                 		return;
                 	}
                 	
@@ -100,7 +116,7 @@ public class GameScreen extends ScreenAdapter {
                     breakConnection(map.getRandomConnection());
                 }
                 
-                LAST_CONNECTION_BREAK_OR_FIX ++;
+                lastConnectionBreakOrFix++;
 
                 for (TrainMoveController controller : TrainMoveController.controllers) {
                     controller.refreshMoveActions();
@@ -119,14 +135,18 @@ public class GameScreen extends ScreenAdapter {
     }
 
 
+    /**
+     * Breaks/Fixes a Junction depending on probability. Called every turn.
+     * Not that the fixJunction method is only called via this method,
+     * if a junction is already broken.
+     */
     private void breakJunction() {
         if (failedJunction != null){
             fixJunction();
             return;
         }
 
-        Random r = new Random();
-        if (r.nextFloat() > JUNCTION_BREAK_PROBABILITY) return;
+        if (random.nextFloat() > JUNCTION_BREAK_PROBABILITY) return;
 
         Map map = Game.getInstance().getMap();
         failedJunction = map.getRandomStation();
@@ -134,48 +154,56 @@ public class GameScreen extends ScreenAdapter {
             failedJunction = map.getRandomStation();
         }
 
-        LAST_BREAK_OR_FIX = 0;
+        lastJunctionBreakOrFix = 0;
         ((CollisionStation) failedJunction).setBroken(true);
         context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is broken!", Color.RED);
 
+        // change the Junction image to indicate it's current state.
         updateFailedJunctionImage();
     }
 
     private void fixJunction() {
-        Random r = new Random();
-        if (r.nextFloat() > JUNCTION_FIX_PROBABILITY) return;
+        if (random.nextFloat() > JUNCTION_FIX_PROBABILITY) return;
 
-        LAST_BREAK_OR_FIX = 0;
+        lastJunctionBreakOrFix = 0;
         ((CollisionStation) failedJunction).setBroken(false);
         context.getTopBarController().displayFlashMessage("The junction " + failedJunction.getName() + " is fixed!" , Color.BLUE);
 
+        // change the Junction image to indicate it's current state.
         updateFailedJunctionImage();
         failedJunction = null;
     }
-    
+
+    /**
+     * Breaks/Fixes a connection depending on probability. Called every turn.
+     * Not that the fixConnection method is only called via this method,
+     * if a connection is already broken.
+     */
     private void breakConnection(Connection connection) {
         if (connection.isBroken()) {
     		fixConnection(connection);
     		return;	
     	}
     	
-    	Random p = new Random();
-    	if (p.nextFloat() > CONNECTION_BREAK_PROBABILITY) return;
+    	if (random.nextFloat() > CONNECTION_BREAK_PROBABILITY) return;
     	
     	connection.setBroken(true);
-    	LAST_BROKEN_CONNECTION = connection;
-    	LAST_CONNECTION_BREAK_OR_FIX = 0;
-    	BROKEN_CONNECTIONS += 1;
+    	failedConnection = connection;
+    	lastConnectionBreakOrFix = 0;
+    	brokenConnections += 1;
     	context.getTopBarController().displayFlashMessage("The track between " + connection.getStation1().getName() + " and " + connection.getStation2().getName() + " is broken!" , Color.RED);
     }
     
     private void fixConnection(Connection connection) {
     	connection.setBroken(false);
-    	LAST_CONNECTION_BREAK_OR_FIX = 0;
-    	BROKEN_CONNECTIONS -= 1;
+    	lastConnectionBreakOrFix = 0;
+    	brokenConnections -= 1;
     	context.getTopBarController().displayFlashMessage("The track between " + connection.getStation1().getName() + " and " + connection.getStation2().getName() + " has been fixed!" , Color.BLUE);
-    	}
-    
+    }
+
+    /**
+     * Updating the image displayed so that it reflects it's un/broken state.
+     */
     private void updateFailedJunctionImage() {
         for (Actor actor : context.getStage().getActors()) {
             if (actor instanceof CollisionStationActor) {

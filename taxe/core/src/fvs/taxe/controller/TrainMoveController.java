@@ -76,11 +76,24 @@ public class TrainMoveController {
         };
     }
 
+    /**
+     * This method is called every turn to ensure that a train doesn't have invalid move actions.
+     * The previous move actions are cleared and regenerated, taking into account broken CollisionStations
+     * and Connections (so a train does not move past something that is broken).
+     */
     public void refreshMoveActions() {
-        if (train.getRoute().size() == 0) return;
+        // If a route is empty there are no moves to refresh.
+        if (train.getRoute().isEmpty()) return;
 
         SequenceAction actionSequence = Actions.sequence();
         IPositionable current = train.getPosition();
+        /* If the train is not at a station, it is not given an intermediate position,
+        but is assigned -1,-1 for some reason. This sets the location of the train to
+        the position of it's image (actor) in this case, so that we can properly calculate
+        the speed it should travel when it is moved from a point other than a station.
+        (As the speed is calculated based of the delta of it's current and target/next position)
+         */
+
         if (current.getX() == -1){
             current.setX((int) train.getActor().getX());
             current.setY((int) train.getActor().getY());
@@ -89,15 +102,21 @@ public class TrainMoveController {
         int routeLength = 0;
         actionSequence.addAction(beforeAction());
 
+        /* We are iterating through the stations in the trains route.
+        We will prune all stations in the route if it is inaccessible
+        (so if it is broken, or there is no connection to it from the previous station in the route).
+         */
         for (int i = 0; i < train.getRoute().size(); i++) {
             Station station = train.getRoute().get(i);
 
+            // Break if the station is broken (as not to increase the route length).
             if (station instanceof CollisionStation){
                 if (((CollisionStation) station).isBroken()) {
                     break;
                 }
             }
 
+            // Break if there is no connection to the station (as not to increase the route length).
             if (i < train.getRoute().size()-1){
                 Station nextStation = train.getRoute().get(i+1);
 
@@ -106,13 +125,17 @@ public class TrainMoveController {
                 }
             }
 
+            // If we have got here then we can reach that station, and increase our route length
             routeLength++;
         }
 
+        // Based on the routeLength calculated prior, we are trimming the route down to size.
         while (train.getRoute().size() - 1 > routeLength) {
+            // Removing the last station in the route until we are at the right size.
             train.getRoute().remove(train.getRoute().size() -1);
         }
 
+        // Populating the actionSequence with move actions for stations in the new pruned route.
         for (final Station station : train.getRoute()) {
             IPositionable next = station.getLocation();
             float duration = getDistance(current, next) / train.getSpeed();

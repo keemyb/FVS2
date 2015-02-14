@@ -123,19 +123,26 @@ public class StationController {
         }
     }
 
-    public void renderConnections(List<Connection> connections, Color color) {
+    /**
+     * Renders all connections. If the connection is broken it will be coloured red.
+     * @param connections The connection to render.
+     * @param unbrokenColor The colour to use if the connection is unbroken.
+     */
+    public void renderConnections(List<Connection> connections, Color unbrokenColor) {
         TaxeGame game = context.getTaxeGame();
 
+        Color brokenColor = Color.RED;
+
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(color);
+        game.shapeRenderer.setColor(unbrokenColor);
 
         for (Connection connection : connections) {
             IPositionable start = connection.getStation1().getLocation();
             IPositionable end = connection.getStation2().getLocation();
             if (connection.isBroken()) {
-            	game.shapeRenderer.setColor(Color.RED);
+            	game.shapeRenderer.setColor(brokenColor);
             }	else {
-            	game.shapeRenderer.setColor(Color.GRAY);
+            	game.shapeRenderer.setColor(unbrokenColor);
             }
             game.shapeRenderer.rectLine(start.getX(), start.getY(), end.getX(), end.getY(), CONNECTION_LINE_WIDTH);
             

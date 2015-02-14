@@ -28,6 +28,11 @@ public class Station{
 		this.location = location;
 	}
 
+    /**
+     * The straight line distance between two stations.
+     * @param station the other station that you would like to find the distance to.
+     * @return the straight line distance between the other station.
+     */
     public int getEuclideanDistance(Station station) {
         int x1 = location.getX();
         int y1 = location.getY();

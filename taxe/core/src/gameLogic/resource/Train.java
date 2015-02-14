@@ -98,14 +98,26 @@ public class Train extends Resource {
         return speed;
     }
 
-    //Station name and turn number
+    /**
+     * This method returns the list of tuples representing where this train has travelled.
+     * The first object in the tuple is the name of the station, and the second object
+     * is the turn that this train travelled to that station.
+     * @return The train's history.
+     */
     public List<Tuple<String, Integer>> getHistory() {
         return history;
     }
 
-    public boolean historyContains(Station station, int afterTurn) {
+    /**
+     * This method finds whether a train has travelled to a certain station on/after
+     * a specified turn.
+     * @param station The station that you want to check
+     * @param turn The minimum turn to consider
+     * @return true if the station appears in the history, on or after the turn specified
+     */
+    public boolean historyContains(Station station, int turn) {
         for(Tuple<String, Integer> entry: history) {
-            if(entry.getFirst().equals(station.getName()) && entry.getSecond() >= afterTurn) {
+            if(entry.getFirst().equals(station.getName()) && entry.getSecond() >= turn) {
                 return true;
             }
         }
@@ -124,6 +136,14 @@ public class Train extends Resource {
         }
     }
 
+    /**
+     * Trains are considered equal if they have the same name or speed
+     * Note that if you add power-ups that modify speed, you may want to
+     * change this method to either not consider speed at all, or it's
+     * original speed.
+     * @param o the object to compare with this train.
+     * @return true if the object is equal to this train, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

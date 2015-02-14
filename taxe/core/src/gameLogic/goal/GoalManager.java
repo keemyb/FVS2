@@ -58,6 +58,12 @@ public class GoalManager {
 		System.out.println("Train arrived to final destination: " + train.getFinalDestination().getName());
 		return completedString;
 	}
+
+    /**
+     * This generates a simple A to B goal.
+     * @param turn The turn that this goal will be issued
+     * @return an easy goal.
+     */
 	public Goal generateEasyGoal(int turn) {
 		Map map = Game.getInstance().getMap();
 
@@ -68,18 +74,30 @@ public class GoalManager {
 
 		Station destination;
         int searchDistance = MAX_ORIGIN_DEST_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
+        /* Here we increase the search distance at every iteration.
+        This is so that we do not loop infinitely if there is no station in our
+        maximum range specified.
+        */
 		do {
 			destination = map.getRandomStation();
             searchDistance += SEARCH_RADIUS_INCREASE_STEP;
 		} while ((destination == origin || destination instanceof CollisionStation)
                 || (origin.getEuclideanDistance(destination) > searchDistance));
+        /* ^^ Picking random stations until it is different from our destination,
+        not a CollisionStation (junction) and within our search distance.
+         */
 
-		Goal goal = new Goal(origin, destination, turn);
-
-		return goal;
+        return new Goal(origin, destination, turn);
 	}
 
+
+    /**
+     * This generates a medium goal from A to B, with a particular train.
+     * @param turn The turn that this goal will be issued
+     * @return a medium difficulty goal.
+     */
 	public Goal generateMediumGoal(int turn) {
+        // Using an easy goal, then adding a train constraint.
         Goal easyGoal = generateEasyGoal(turn);
 
         easyGoal.addConstraint(resourceManager.getRandomTrain());
@@ -87,7 +105,13 @@ public class GoalManager {
 		return easyGoal;
 	}
 
+    /**
+     * This generates a hard goal from A to B via C, with a particular train.
+     * @param turn The turn that this goal will be issued
+     * @return a difficult goal.
+     */
 	public Goal generateDifficultGoal(int turn) {
+        // Using a medium goal, then adding a via constraint.
         Goal mediumGoal = generateMediumGoal(turn);
 
         Station destination = mediumGoal.getDestination();
@@ -95,12 +119,20 @@ public class GoalManager {
 
         Map map = Game.getInstance().getMap();
         Station via;
+
+        /* Here we increase the search distance at every iteration.
+        This is so that we do not loop infinitely if there is no station in our
+        maximum range specified.
+        */
         int searchDistance = MAX_VIA_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
         do {
 			via = map.getRandomStation();
             searchDistance += SEARCH_RADIUS_INCREASE_STEP;
         } while ((via == origin) || (via == destination)
                 || (origin.getEuclideanDistance(via) > searchDistance || destination.getEuclideanDistance(via) > searchDistance));
+        /* ^^ Picking random stations until it is different from our destination and origin,
+        not a CollisionStation (junction) and within our search distance.
+         */
 
 		mediumGoal.addConstraint(via);
 

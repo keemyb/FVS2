@@ -52,28 +52,24 @@ public class RouteController {
         train.getActor().setVisible(true);
     }
 
+    /**
+     * Adds a station to the route if it is not broken and there is a connection
+     * between the last station in the route so far and this one.
+     * @param station The station to add to the route.
+     */
     private void addStationToRoute(Station station) {
         // the latest position chosen in the positions so far
         IPositionable lastPosition =  positions.get(positions.size() - 1);
         Station lastStation = context.getGameLogic().getMap().getStationFromPosition(lastPosition);
 
         boolean hasConnection = (context.getGameLogic().getMap().doesConnectionExist(station.getName(), lastStation.getName()));
-        boolean isBroken;
+        boolean isStationBroken = false;
 
         if (station instanceof CollisionStation){
-            isBroken = ((CollisionStation) station).isBroken();
-        }
-        else{
-            isBroken = false;
+            isStationBroken = ((CollisionStation) station).isBroken();
         }
 
-//Todo Add check for broken station or connection
-        
-        //if (connection.isBroken()) {
-        //	context.getTopBarController().displayFlashMessage("This connection doesn't exist" , Color.RED);
-        //}
-        
-        if(!hasConnection || isBroken){
+        if(!hasConnection || isStationBroken){
             context.getTopBarController().displayFlashMessage("This connection doesn't exist", Color.RED);
         } else {
             positions.add(station.getLocation());

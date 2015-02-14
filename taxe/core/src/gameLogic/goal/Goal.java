@@ -10,26 +10,21 @@ public class Goal {
 	private int turnIssued;
 	private boolean complete = false;
 
-	public Station getVia() {
-		return via;
-	}
-
-	public Train getRequiredTrain() {
-		return requiredTrain;
-	}
-
-	//constraints
+    // These are additional constraints that may be null (for an easy or medium goal)
+    // The train that must be used to complete this goal.
 	private Train requiredTrain = null;
+    // The station a train must pass to complete this goal.
 	private Station via = null;
  
     private int score;
+    // The value that a score will be scaled by every-time a new constraint is added.
     private static final float CONSTRAINT_SCORE_MODIFIER = 1.5F;
-
 
 	public Goal(Station origin, Station destination, int turn) {
 		this.origin = origin;
 		this.destination = destination;
 		this.turnIssued = turn;
+        // The base score is the straight line distance between the origin and destination.
         this.score = origin.getEuclideanDistance(destination);
 	}
 	
@@ -43,6 +38,16 @@ public class Goal {
         score *= CONSTRAINT_SCORE_MODIFIER;
     }
 
+    /**
+     * A goal is considered complete if a train has visited both the goal's origin
+     * and destination, and it also has met all of it's specified constraints, if any.
+     * If there is a "via" requirement, the train will be checked to see if it has visited
+     * that via station.
+     * If there is a requiredTrain requirement, the train will be checked to see if it is
+     * equal to that train specified.
+     * @param train The train that will be checked for goal completion.
+     * @return true if the train has met all of it's requirement's, false otherwise.
+     */
 	public boolean isComplete(Train train) {
         if (!train.historyContains(origin, turnIssued)) return false;
         if (!train.historyContains(destination, turnIssued)) return false;
@@ -69,12 +74,21 @@ public class Goal {
     public Station getOrigin() {
         return origin;
     }
+
+    public Station getVia() {
+        return via;
+    }
+
+    public Train getRequiredTrain() {
+        return requiredTrain;
+    }
 	
 	public String toString() {
 		String trainString = "any train";
         if (requiredTrain != null) {
             String trainName = requiredTrain.getName();
             String article;
+            // Pedantic vowel check so we use the right article.
             if (Vowel.startsWithVowel(trainName)) {
                 article = "an ";
             } else {

@@ -154,24 +154,22 @@
             
             <div class="block">
                 <h3 class="sub-title text-center">Sample Code</h3>
-                <p>All of our code has succint comments so that you always know how, and why things have been
-                done a certain way, this makes our game easy to extend and modify.</p>
+                <p>All code that team LYS have added or modified has been commented and given JavaDocs where appropriate.
+                </b>This means that you always know how, and why things have been implemented, making our game easy to extend.</p>
                 <div class="code-block">
                     <pre><code class="language-java">
     /**
-     * Returns the Intersection at the given point.
-     * @param point The point where an intersection lies.
-     * @return The intersection at the point given, if it exists.
-     * If it does not then null is returned.
+     * This generates a medium goal from A to B, with a particular train.
+     * @param turn The turn that this goal will be issued
+     * @return a medium difficulty goal.
      */
-    public Intersection getIntersection(Point point) {
-        if (intersections.isEmpty()) return null;
+    public Goal generateMediumGoal(int turn) {
+        // Using an easy goal, then adding a train constraint.
+        Goal easyGoal = generateEasyGoal(turn);
 
-        for (Intersection intersection : intersections) {
-            if (point.equals(intersection.getPoint())) return intersection;
-        }
+        easyGoal.addConstraint(resourceManager.getRandomTrain());
 
-        return null;
+        return easyGoal;
     }
                     </code></pre>
                 </div><!--//code-block-->

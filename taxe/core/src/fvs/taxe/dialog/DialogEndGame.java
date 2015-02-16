@@ -19,6 +19,8 @@ public class DialogEndGame extends Dialog{
 		
 		int highscore = 0;
 		int playernum = 0;
+		int player1Score = 0;
+		int player2Score = 0;
 		for(Player player : pm.getAllPlayers()) {
 			int goalsComplete = 0;
 			for(Goal goal : player.getGoals()) {
@@ -29,19 +31,32 @@ public class DialogEndGame extends Dialog{
 			
 			text("Player " + player.getPlayerNumber() + " scored " + player.getScore() + " points.");
 			getContentTable().row();
-			
-			if(goalsComplete > highscore) {
+
+			if(player.getScore() > highscore) {
 				highscore = goalsComplete;
 				playernum = player.getPlayerNumber();
 			}
+
+			if (playernum == 1){
+				player1Score =player.getScore();
+			}
+
+			if (playernum == 2){
+				player2Score =player.getScore();
+			}
+
 			else {
 				playernum = 0;
 			}
 		}
-		if(playernum != 0) {
-			text("PLAYER " + playernum + " WINS!");
+		if(player1Score > player2Score) {
+			text("PLAYER 1 WINS!");
+			
+		} else if (player2Score > player1Score) {
+			text("PLAYER 2 WINS!");
+
 		} else {
-			text("NO WINNER");
+			text("TIE GAME");
 		}
 		
 		//button("Main Menu","MENU");

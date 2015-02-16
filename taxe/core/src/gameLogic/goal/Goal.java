@@ -30,6 +30,8 @@ public class Goal {
 	
 	public void addConstraint(Station via) {
         this.via = via;
+        score = origin.getEuclideanDistance(via);
+        score += via.getEuclideanDistance(destination);
         score *= CONSTRAINT_SCORE_MODIFIER;
 	}
 

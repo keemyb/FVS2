@@ -124,6 +124,22 @@ public class Train extends Resource {
         return false;
     }
 
+    // Most recent station added to history
+    public String getLastStation() {
+        int size = history.size();
+        return history.get(size-1).getFirst();
+    }
+
+    // Second most recent station added to history
+    public String getSecondLastStation() {
+        int size = history.size();
+        if (size < 2){
+            return"";
+        }
+        return history.get(size-2).getFirst();
+    }
+
+
     //Station name and turn number
     public void addHistory(String stationName, int turn) {
         history.add(new Tuple<String, Integer>(stationName, turn));

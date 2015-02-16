@@ -110,7 +110,7 @@ public class TrainMoveController {
             Station station = train.getRoute().get(i);
 
             // Break if the station is broken (as not to increase the route length).
-            if (station instanceof CollisionStation){
+            if (station instanceof CollisionStation && routeLength != 0){
                 if (((CollisionStation) station).isBroken()) {
                     break;
                 }

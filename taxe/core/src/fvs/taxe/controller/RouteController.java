@@ -13,7 +13,6 @@ import gameLogic.map.CollisionStation;
 import gameLogic.map.IPositionable;
 import gameLogic.map.Station;
 import gameLogic.resource.Train;
-import gameLogic.map.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,15 @@ public class RouteController {
             isStationBroken = ((CollisionStation) station).isBroken();
         }
 
-        if(!hasConnection || isStationBroken){
+        Station currentStation = context.getGameLogic().getMap().getStationByName((train.getLastStation()));
+        String previousStation = train.getSecondLastStation();
+        if (station.getName() != previousStation){
+        }
+        if (currentStation instanceof CollisionStation && station.getName() != previousStation && positions.size() <= 1){
+            context.getTopBarController().displayFlashMessage("You cannot pass a junction failure", Color.RED);
+        }
+
+        else if(!hasConnection || isStationBroken){
             context.getTopBarController().displayFlashMessage("This connection doesn't exist", Color.RED);
         } else {
             positions.add(station.getLocation());

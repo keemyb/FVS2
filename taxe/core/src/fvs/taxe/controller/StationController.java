@@ -93,9 +93,14 @@ public class StationController {
     	collisionStationActor.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if(Game.getInstance().getState() == GameState.NORMAL){
+                    DialogStationMultitrain dia = new DialogStationMultitrain(collisionStation, context.getSkin(), context);
+                    if(dia.getIsTrain()) {
+                        dia.show(context.getStage());
+                    }
+                }
                 stationClicked(collisionStation);
             }
-
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 tooltip.setPosition(collisionStationActor.getX() + 10, collisionStationActor.getY() + 10);

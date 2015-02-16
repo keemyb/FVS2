@@ -1,12 +1,7 @@
 package fvs.taxe.controller;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import fvs.taxe.TaxeGame;
+import fvs.taxe.Tooltip;
 import gameLogic.Player;
 import gameLogic.PlayerManager;
 import gameLogic.goal.Goal;
@@ -15,21 +10,29 @@ import gameLogic.map.Station;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
 public class GoalController {
 	private Context context;
 	private Group goalButtons = new Group();
 
-	// -comments relating to tooltips are an implementation that didn't work
-	// left commented so the problem with them could be found and maybe fixed in later work
-	//private Tooltip originTip;
-	//private Tooltip destTip;
-	//private Tooltip viaTip;
+	private Tooltip originTip;
+	private Tooltip destTip;
+	private Tooltip viaTip;
 
 	public GoalController(Context context) {
 		this.context = context;
-		//originTip = new Tooltip(context.getSkin());
-		//destTip = new Tooltip(context.getSkin());
-		//viaTip = new Tooltip(context.getSkin());
+		originTip = new Tooltip(context.getSkin());
+		destTip = new Tooltip(context.getSkin());
+		viaTip = new Tooltip(context.getSkin());
+		context.getStage().addActor(originTip);
+		context.getStage().addActor(destTip);
+		context.getStage().addActor(viaTip);
 	}
 
 	private List<Goal> playerGoals() {
@@ -93,19 +96,19 @@ public class GoalController {
 					dest.getActor().setFinishImage();
 					if(via != null) 
 						via.getActor().setHighlightedImage();
-					/*originTip.setPosition(origin.getLocation().getX(), origin
-							.getLocation().getY());
+					originTip.setPosition(origin.getLocation().getX()+10, origin
+							.getLocation().getY()+10);
 					originTip.show(origin.getName());
 					
-					destTip.setPosition(dest.getLocation().getX(), dest.getLocation()
-							.getY());
+					destTip.setPosition(dest.getLocation().getX()+10, dest.getLocation()
+							.getY()+10);
 					destTip.show(dest.getName());
 					
 					if (via != null) {
-						viaTip.setPosition(via.getLocation().getX(), via
-								.getLocation().getY());
+						viaTip.setPosition(via.getLocation().getX()+10, via
+								.getLocation().getY()+10);
 						viaTip.show(via.getName());
-					}*/
+					}
 					
 				}
 
@@ -116,9 +119,9 @@ public class GoalController {
 					dest.getActor().setNormalImage();
 					if(via != null) 
 						via.getActor().setNormalImage();
-					//originTip.hide();
-					//destTip.hide();
-					//viaTip.hide();
+					originTip.hide();
+					destTip.hide();
+					viaTip.hide();
 				}
 			});
 			goalButtons.addActor(button);

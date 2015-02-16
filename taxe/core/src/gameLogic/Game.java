@@ -14,7 +14,7 @@ public class Game {
 	private ResourceManager resourceManager;
 	private Map map;
 	private GameState state;
-	private boolean updateGoalsOnScreen;
+	private boolean updateGoalsOnScreen; //indicates if the goals need to be re-drawn
 	private List<GameStateListener> gameStateListeners = new ArrayList<GameStateListener>();
 
 	private final int CONFIG_PLAYERS = 2;

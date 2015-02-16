@@ -253,15 +253,12 @@ public class GameScreen extends ScreenAdapter {
         game.fontSmall.draw(game.batch, "Scores", (float) TaxeGame.WIDTH - 140.0f, y);
         game.fontSmall.draw(game.batch, "Player 1: " + gameLogic.getPlayerManager().getAllPlayers().get(0).getScore(), (float) TaxeGame.WIDTH - 140.0f, y-25.0f);
         game.fontSmall.draw(game.batch, "Player 2: " + gameLogic.getPlayerManager().getAllPlayers().get(1).getScore(), (float) TaxeGame.WIDTH - 140.0f, y-50.0f);
-        //score
-        //player 1 - 9999
-        //player 2 - 9999
         game.batch.end();
 
         resourceController.drawHeaderText();
         goalController.showCurrentPlayerHeader();
-        if(gameLogic.getUpdateGoalsOnScreen()) {
-        	goalController.showCurrentPlayerGoals();
+        if(gameLogic.getUpdateGoalsOnScreen()) { //only redraw the goals if they have changed (turn or goal complete
+        	goalController.showCurrentPlayerGoals(); // allows us to add listeners to the buttons for the goals
         	gameLogic.setUpdateGoalsOnScreen(false);
         }
     }

@@ -19,6 +19,8 @@ public class GoalController {
 	private Context context;
 	private Group goalButtons = new Group();
 
+	// -comments relating to tooltips are an implementation that didn't work
+	// left commented so the problem with them could be found and maybe fixed in later work
 	//private Tooltip originTip;
 	//private Tooltip destTip;
 	//private Tooltip viaTip;
@@ -86,6 +88,7 @@ public class GoalController {
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
+					//when we hover over a goal, highligh the associated stations
 					origin.getActor().setStartImage();
 					dest.getActor().setFinishImage();
 					if(via != null) 
@@ -108,7 +111,7 @@ public class GoalController {
 
 				@Override
 				public void exit(InputEvent event, float x, float y,
-						int pointer, Actor toActor) {
+						int pointer, Actor toActor) { //return to normal
 					origin.getActor().setNormalImage();
 					dest.getActor().setNormalImage();
 					if(via != null) 

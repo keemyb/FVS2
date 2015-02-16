@@ -13,6 +13,8 @@ public class StationActor extends Image {
     private static int height = 20;
 
     private static String normalImage = "station_dot.png";
+    
+    // represent the highlighted stations when hovering over a goal
     private static String startImage = "station_dot_start.png";
     private static String finishImage = "station_dot_finish.png";
     private static String highlightedImage = "station_dot_highlight.png";

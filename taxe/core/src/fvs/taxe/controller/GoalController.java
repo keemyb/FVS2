@@ -91,11 +91,6 @@ public class GoalController {
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
-					//when we hover over a goal, highlight the associated stations
-					origin.getActor().setStartImage();
-					dest.getActor().setFinishImage();
-					if(via != null) 
-						via.getActor().setHighlightedImage();
 					originTip.setPosition(origin.getLocation().getX()+10, origin
 							.getLocation().getY()+10);
 					originTip.show(origin.getName());
@@ -115,10 +110,6 @@ public class GoalController {
 				@Override
 				public void exit(InputEvent event, float x, float y,
 						int pointer, Actor toActor) { //return to normal
-					origin.getActor().setNormalImage();
-					dest.getActor().setNormalImage();
-					if(via != null) 
-						via.getActor().setNormalImage();
 					originTip.hide();
 					destTip.hide();
 					viaTip.hide();

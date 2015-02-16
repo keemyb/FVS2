@@ -88,7 +88,7 @@ public class GoalController {
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
-					//when we hover over a goal, highligh the associated stations
+					//when we hover over a goal, highlight the associated stations
 					origin.getActor().setStartImage();
 					dest.getActor().setFinishImage();
 					if(via != null) 

@@ -118,7 +118,8 @@ public class GoalManager {
             shortestRoute = map.getShortestRoute(mediumGoal.getOrigin(), mediumGoal.getDestination());
         } while (shortestRoute.size() < 2);
 
-        int index = 1 + random.nextInt(shortestRoute.size() - 1);
+        // Making sure the via isn't one of the endpoints
+        int index = 1 + random.nextInt(shortestRoute.size() - 2);
         Station via = shortestRoute.get(index);
 
 		mediumGoal.addConstraint(via);

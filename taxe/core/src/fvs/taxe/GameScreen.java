@@ -40,6 +40,7 @@ public class GameScreen extends ScreenAdapter {
     public static final int ANIMATION_TIME = 2;
     private Tooltip tooltip;
     private Context context;
+    private int currentTurn = 0;
 
     private Station failedJunction;
     private Connection failedConnection;
@@ -248,7 +249,13 @@ public class GameScreen extends ScreenAdapter {
         stage.draw();
         
         game.batch.begin();
-        game.fontSmall.draw(game.batch, "Turn " + (gameLogic.getPlayerManager().getTurnNumber() + 1) + "/" + gameLogic.TOTAL_TURNS, (float) TaxeGame.WIDTH - 90.0f, 20.0f);
+
+        if (gameLogic.getPlayerManager().getTurnNumber() < 30){
+            currentTurn = gameLogic.getPlayerManager().getTurnNumber() + 1;
+        } else {
+            currentTurn = 30;
+        }
+        game.fontSmall.draw(game.batch, "Turn " + (currentTurn) + "/" + gameLogic.TOTAL_TURNS, (float) TaxeGame.WIDTH - 90.0f, 20.0f);
         float y = ((float) TaxeGame.HEIGHT)- 10.0f - TopBarController.CONTROLS_HEIGHT;
         game.fontSmall.draw(game.batch, "Scores", (float) TaxeGame.WIDTH - 140.0f, y);
         game.fontSmall.draw(game.batch, "Player 1: " + gameLogic.getPlayerManager().getAllPlayers().get(0).getScore(), (float) TaxeGame.WIDTH - 140.0f, y-25.0f);

@@ -132,7 +132,7 @@ public class Train extends Resource {
     public Integer getLastTurnStationWasVisited(Station station) {
         for (int i = history.size() - 1; i >= 0; i--) {
             Tuple<String, Integer> entry = history.get(i);
-            if (entry.getFirst().equals(station.getName())) {
+            if (station.getName().equals(entry.getFirst())) {
                 return entry.getSecond();
             }
         }

@@ -20,19 +20,16 @@ public class Goal {
     // The value that a score will be scaled by every-time a new constraint is added.
     private static final float CONSTRAINT_SCORE_MODIFIER = 1.5F;
 
-	public Goal(Station origin, Station destination, int turn) {
+	public Goal(Station origin, Station destination, int turn, int score) {
 		this.origin = origin;
 		this.destination = destination;
 		this.turnIssued = turn;
-        // The base score is the straight line distance between the origin and destination.
-        this.score = origin.getEuclideanDistance(destination);
+        this.score = score;
 	}
 	
 	public void addConstraint(Station via) {
         this.via = via;
-        score = origin.getEuclideanDistance(via);
-        score += via.getEuclideanDistance(destination);
-        score *= CONSTRAINT_SCORE_MODIFIER * CONSTRAINT_SCORE_MODIFIER;
+        score *= CONSTRAINT_SCORE_MODIFIER;
 	}
 
     public void addConstraint(Train train) {
@@ -65,11 +62,10 @@ public class Goal {
 
         if (via != null) {
             if (!train.historyContains(via, turnIssued)) return false;
+            int turnViaWasVisited = train.getLastTurnStationWasVisited(via);
+            if (turnOriginWasVisited > turnViaWasVisited) return false;
+            if (turnViaWasVisited > turnDestinationWasVisited) return false;
         }
-
-        int turnViaWasVisited = train.getLastTurnStationWasVisited(via);
-        if (turnOriginWasVisited > turnViaWasVisited) return false;
-        if (turnViaWasVisited > turnDestinationWasVisited) return false;
 
         return true;
 	}

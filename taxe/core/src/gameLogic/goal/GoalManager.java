@@ -9,17 +9,16 @@ import gameLogic.resource.ResourceManager;
 import gameLogic.resource.Train;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GoalManager {
 	public final static int CONFIG_MAX_PLAYER_GOALS = 3;
-    // The max distance between the origin and destination.
-    public final static int MAX_ORIGIN_DEST_DISTANCE = 300;
-    // The max distance between the via and the origin, and the via and destination.
-    public final static int MAX_VIA_DISTANCE = MAX_ORIGIN_DEST_DISTANCE * 2 / 3;
-    // How much the search radius will increase on failure
-	public final static int SEARCH_RADIUS_INCREASE_STEP = MAX_ORIGIN_DEST_DISTANCE / 10;
-	private ResourceManager resourceManager;
+    // A generated route must have at-least this number of stations in it. (inclusive of origin and destination).
+    public final static int MINIMUM_AMOUNT_OF_STATIONS_IN_SHORTEST_ROUTE = 4;
+    private ResourceManager resourceManager;
+
+    private Random random = new Random();
 	
 	public GoalManager(ResourceManager resourceManager) {
 		this.resourceManager = resourceManager;
@@ -73,21 +72,15 @@ public class GoalManager {
 		} while (origin instanceof CollisionStation);
 
 		Station destination;
-        int searchDistance = MAX_ORIGIN_DEST_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
-        /* Here we increase the search distance at every iteration.
-        This is so that we do not loop infinitely if there is no station in our
-        maximum range specified.
-        */
-		do {
-			destination = map.getRandomStation();
-            searchDistance += SEARCH_RADIUS_INCREASE_STEP;
-		} while ((destination == origin || destination instanceof CollisionStation)
-                || (origin.getEuclideanDistance(destination) > searchDistance));
-        /* ^^ Picking random stations until it is different from our destination,
-        not a CollisionStation (junction) and within our search distance.
-         */
 
-        return new Goal(origin, destination, turn);
+        List<Station> shortestRoute;
+        do {
+            destination = map.getRandomStation();
+            shortestRoute = map.getShortestRoute(origin, destination);
+        } while ((destination == origin || destination instanceof CollisionStation)
+                || shortestRoute.size() < MINIMUM_AMOUNT_OF_STATIONS_IN_SHORTEST_ROUTE);
+
+        return new Goal(origin, destination, turn, map.getRouteLength(shortestRoute));
 	}
 
 
@@ -111,28 +104,22 @@ public class GoalManager {
      * @return a difficult goal.
      */
 	public Goal generateDifficultGoal(int turn) {
-        // Using a medium goal, then adding a via constraint.
-        Goal mediumGoal = generateMediumGoal(turn);
-
-        Station destination = mediumGoal.getDestination();
-        Station origin = mediumGoal.getOrigin();
-
         Map map = Game.getInstance().getMap();
-        Station via;
 
-        /* Here we increase the search distance at every iteration.
-        This is so that we do not loop infinitely if there is no station in our
-        maximum range specified.
+        // Using a medium goal, then adding a via constraint.
+        // We need a goal that has at-least one station between them
+        /* Note this check isn't strictly necessary unless the
+        MINIMUM_AMOUNT_OF_STATIONS_IN_SHORTEST_ROUTE is set <= 2 for some reason
         */
-        int searchDistance = MAX_VIA_DISTANCE - SEARCH_RADIUS_INCREASE_STEP;
+        Goal mediumGoal;
+        List<Station> shortestRoute;
         do {
-			via = map.getRandomStation();
-            searchDistance += SEARCH_RADIUS_INCREASE_STEP;
-        } while ((via == origin) || (via == destination)
-                || (origin.getEuclideanDistance(via) > searchDistance || destination.getEuclideanDistance(via) > searchDistance));
-        /* ^^ Picking random stations until it is different from our destination and origin,
-        not a CollisionStation (junction) and within our search distance.
-         */
+            mediumGoal = generateMediumGoal(turn);
+            shortestRoute = map.getShortestRoute(mediumGoal.getOrigin(), mediumGoal.getDestination());
+        } while (shortestRoute.size() < 2);
+
+        int index = 1 + random.nextInt(shortestRoute.size() - 1);
+        Station via = shortestRoute.get(index);
 
 		mediumGoal.addConstraint(via);
 

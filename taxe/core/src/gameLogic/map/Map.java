@@ -1,5 +1,8 @@
 package gameLogic.map;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.HashBasedTable;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -11,6 +14,11 @@ import java.util.Random;
 public class Map {
     private List<Station> stations;
     private List<Connection> connections;
+    /* The row represents the origin station
+           col represents the destination station
+           the List of stations is inclusive of the two endPoints.
+     */
+    private Table<Station, Station, List<Station>> shortestRoutes = HashBasedTable.create();
 
     /* Saving random instance so we don't have keep instantiating new
     ones every time we need a random number.
@@ -22,6 +30,18 @@ public class Map {
         connections = new ArrayList<Connection>();
 
         initialise();
+
+        // Computing all possible routes for later use
+        for (Station station1 : stations) {
+            for (Station station2 : stations) {
+                if (station1.equals(station2)) continue;
+                if (shortestRoutes.contains(station2, station1)) continue;
+                List<Station> route = getShortestRoute(station1, station2);
+                // Place the reversed one in too to save time.
+                shortestRoutes.put(station1, station2, route);
+                shortestRoutes.put(station2, station1, reverseRoute(route));
+            }
+        }
     }
 
     private void initialise() {
@@ -183,5 +203,116 @@ public class Map {
         }
 
         return route;
+    }
+
+    /**
+     * Returns the shortest route from one track to another.
+     * @param from The station to start from.
+     * @param to The station to go to.
+     * @return a list of stations representing the shortest route between the two stations.
+     */
+    public List<Station> getShortestRoute(Station from, Station to) {
+        if (shortestRoutes.contains(from, to)) return shortestRoutes.get(from, to);
+
+        List<List<Station>> routes = new ArrayList<List<Station>>();
+        List<Station> currentRoute = new ArrayList<Station>();
+        currentRoute.add(from);
+        getRoutes(to, currentRoute, new ArrayList<Station>(), routes);
+
+        int shortestRouteLength = Integer.MAX_VALUE;
+        List<Station> shortestRoute = null;
+        for (List<Station> route : routes) {
+            int routeLength = getRouteLength(route);
+            if (routeLength < shortestRouteLength) {
+                shortestRoute = route;
+            }
+        }
+
+        return shortestRoute;
+    }
+
+    /**
+     * Returns valid routes from one station to another.
+     * @param destination   The finishing point of the route.
+     * @param currentRoute  The route traversed so far.
+     * @param visitedStations The tracks that have been visited so far.
+     * @param routes        The list of valid routes found so far.
+     * @return The list of the routes between the two points.
+     */
+    private void getRoutes(Station destination,
+                                  List<Station> currentRoute,
+                                  List<Station> visitedStations,
+                                  List<List<Station>> routes) {
+        Station lastStationInCurrentRoute = currentRoute.get(currentRoute.size() - 1);
+
+        // If we have backtracked to the first station, and we have visited all its connected stations,
+        // there are no more solutions.
+        if (currentRoute.size() == 1 && visitedStations.containsAll(getConnectedStations(lastStationInCurrentRoute))) return;
+
+        List<Station> connectedStations = getConnectedStations(lastStationInCurrentRoute);
+
+        // Discard all visited stations
+        connectedStations.removeAll(visitedStations);
+
+        // Recurse over all non visited station
+        for (Station nextStation : connectedStations){
+            currentRoute.add(nextStation);
+            // If the last station visited is our destination, add the route
+            // and keep looking for more routes
+            if (nextStation.equals(destination)) {
+                // Cloning the route as we don't want it to be mutated.
+                routes.add(new ArrayList<Station>(currentRoute));
+                currentRoute.remove(destination);
+            } else {
+                visitedStations.add(nextStation);
+                getRoutes(destination, currentRoute, visitedStations, routes);
+                currentRoute.remove(nextStation);
+            }
+        }
+    }
+
+    /**
+     * @param station the station to find neighbours of.
+     * @return a list of stations connected to a station.
+     */
+    private List<Station> getConnectedStations(Station station) {
+        List<Station> connectedStations = new ArrayList<Station>();
+        for (Connection connection : getConnectionsFromStation(station)) {
+            Station station1 = connection.getStation1();
+            Station station2 = connection.getStation2();
+            if (station1.equals(station)) {
+                connectedStations.add(station2);
+            } else connectedStations.add(station1);
+        }
+        return connectedStations;
+    }
+
+    /**
+     * Returns the cumulative length of a route.
+     * @param route the route that you want to compute the length of
+     * @return the total length of the route.
+     */
+    public int getRouteLength(List<Station> route) {
+        int length = 0;
+        for (int i=0; i < route.size() - 1; i++) {
+            Station currentStation = route.get(i);
+            Station nextStation = route.get(i + 1);
+            length += currentStation.getEuclideanDistance(nextStation);
+        }
+        return length;
+    }
+
+    /**
+     * Reverses a route.
+     * @param route the route that you want to be reversed.
+     * @return the reversed route.
+     */
+    private List<Station> reverseRoute(List<Station> route) {
+        List<Station> reversedRoute = new ArrayList<Station>();
+
+        for (Station station : route) {
+            reversedRoute.add(0, station);
+        }
+        return reversedRoute;
     }
 }

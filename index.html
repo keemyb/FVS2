@@ -159,17 +159,33 @@
                 <div class="code-block">
                     <pre><code class="language-java">
     /**
-     * This generates a medium goal from A to B, with a particular train.
+     * This generates a hard goal from A to B via C, with a particular train.
      * @param turn The turn that this goal will be issued
-     * @return a medium difficulty goal.
+     * @return a difficult goal.
      */
-    public Goal generateMediumGoal(int turn) {
-        // Using an easy goal, then adding a train constraint.
-        Goal easyGoal = generateEasyGoal(turn);
+    public Goal generateDifficultGoal(int turn) {
+        Map map = Game.getInstance().getMap();
 
-        easyGoal.addConstraint(resourceManager.getRandomTrain());
+        // Using a medium goal, then adding a via constraint.
+        // We need a goal that has at-least one station between them
+        /* Note this check isn't strictly necessary unless the
+        MINIMUM_AMOUNT_OF_STATIONS_IN_SHORTEST_ROUTE is set &lt;= 2 for some reason
+        */
+        Goal mediumGoal;
+        List<Station> shortestRoute;
+        do {
+            mediumGoal = generateMediumGoal(turn);
+            shortestRoute = map.getShortestRoute(mediumGoal.getOrigin(), 
+                mediumGoal.getDestination());
+        } while (shortestRoute.size() &lt; 2);
 
-        return easyGoal;
+        // Making sure the via isn't one of the endpoints
+        int index = 1 + random.nextInt(shortestRoute.size() - 2);
+        Station via = shortestRoute.get(index);
+
+        mediumGoal.addConstraint(via);
+
+        return mediumGoal;
     }
                     </code></pre>
                 </div><!--//code-block-->

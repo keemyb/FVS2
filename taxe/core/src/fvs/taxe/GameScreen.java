@@ -40,7 +40,7 @@ public class GameScreen extends ScreenAdapter {
     public static final int ANIMATION_TIME = 2;
     private Tooltip tooltip;
     private Context context;
-    private int currentTurn = 0;
+    private int currentTurn;
 
     private Station failedJunction;
     private Connection failedConnection;

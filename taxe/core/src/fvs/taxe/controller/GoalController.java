@@ -1,5 +1,11 @@
 package fvs.taxe.controller;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import fvs.taxe.TaxeGame;
 import fvs.taxe.Tooltip;
 import gameLogic.Player;
@@ -9,13 +15,6 @@ import gameLogic.map.Station;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class GoalController {
 	private Context context;
@@ -77,7 +76,6 @@ public class GoalController {
 
 		for (Goal goal : playerGoals()) {
 			y -= 30;
-
 			TextButton button = new TextButton(goal.toString(),
 					context.getSkin());
 			button.setPosition(x, y);
@@ -91,17 +89,17 @@ public class GoalController {
 				@Override
 				public void enter(InputEvent event, float x, float y,
 						int pointer, Actor fromActor) {
-					originTip.setPosition(origin.getLocation().getX()+10, origin
-							.getLocation().getY()+10);
+					originTip.setPosition(origin.getLocation().getX()-75, origin
+							.getLocation().getY()+13);
 					originTip.show(origin.getName());
 					
-					destTip.setPosition(dest.getLocation().getX()+10, dest.getLocation()
-							.getY()+10);
+					destTip.setPosition(dest.getLocation().getX()-75, dest.getLocation()
+							.getY()+13);
 					destTip.show(dest.getName());
 					
 					if (via != null) {
-						viaTip.setPosition(via.getLocation().getX()+10, via
-								.getLocation().getY()+10);
+						viaTip.setPosition(via.getLocation().getX()-75, via
+								.getLocation().getY()+13);
 						viaTip.show(via.getName());
 					}
 					

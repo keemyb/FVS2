@@ -45,6 +45,7 @@ public class Goal {
      * and destination, and it also has met all of it's specified constraints, if any.
      * If there is a "via" requirement, the train will be checked to see if it has visited
      * that via station.
+     * The train must have passed these stations in the correct order.
      * If there is a requiredTrain requirement, the train will be checked to see if it is
      * equal to that train specified.
      * @param train The train that will be checked for goal completion.
@@ -54,6 +55,10 @@ public class Goal {
         if (!train.historyContains(origin, turnIssued)) return false;
         if (!train.historyContains(destination, turnIssued)) return false;
 
+        int turnOriginWasVisited = train.getLastTurnStationWasVisited(origin);
+        int turnDestinationWasVisited = train.getLastTurnStationWasVisited(destination);
+        if (turnOriginWasVisited > turnDestinationWasVisited) return false;
+
         if (requiredTrain != null) {
             if (!train.equals(requiredTrain)) return false;
         }
@@ -61,6 +66,10 @@ public class Goal {
         if (via != null) {
             if (!train.historyContains(via, turnIssued)) return false;
         }
+
+        int turnViaWasVisited = train.getLastTurnStationWasVisited(via);
+        if (turnOriginWasVisited > turnViaWasVisited) return false;
+        if (turnViaWasVisited > turnDestinationWasVisited) return false;
 
         return true;
 	}

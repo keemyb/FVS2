@@ -124,6 +124,21 @@ public class Train extends Resource {
         return false;
     }
 
+    /**
+     * This method returns the last turn a station was visited.
+     * @param station The station to find.
+     * @return The turn it was last visited, otherwise null if it was not visited.
+     */
+    public Integer getLastTurnStationWasVisited(Station station) {
+        for (int i = history.size() - 1; i >= 0; i--) {
+            Tuple<String, Integer> entry = history.get(i);
+            if (entry.getFirst().equals(station.getName())) {
+                return entry.getSecond();
+            }
+        }
+        return null;
+    }
+
     // Most recent station added to history
     public String getLastStation() {
         int size = history.size();
